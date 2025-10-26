@@ -6,7 +6,7 @@
     <title>PCP - Painel de Controle</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Tema Dark (mantido igual) */
+        /* Tema Dark */
         :root {
             --bg-primary: #0D1117;
             --bg-secondary: #161B22;
@@ -19,6 +19,10 @@
             --highlight-green: #238636;
             --highlight-bg-red: rgba(218, 54, 51, 0.15);
             --highlight-bg-green: rgba(35, 134, 54, 0.15);
+            --completed-bg: #21262d;
+            --completed-text: #8B949E;
+            --icon-completed-color: #238636; /* Verde */
+            --icon-partial-color: #D97706; /* Laranja/Amarelo */
         }
         body {
             background-color: var(--bg-primary);
@@ -58,8 +62,30 @@
             top: 0;
             z-index: 10;
         }
-        tbody tr:nth-child(even) { background-color: rgba(22, 27, 34, 0.5); }
-        tbody tr:hover { background-color: #21262D; }
+        tbody tr:nth-child(even):not(.completed-row) { background-color: rgba(22, 27, 34, 0.5); }
+        tbody tr:hover:not(.completed-row) { background-color: #21262D; }
+
+        .completed-row td {
+            background-color: var(--completed-bg) !important;
+            color: var(--completed-text);
+            text-decoration: line-through;
+        }
+        .completed-row td input[type="checkbox"] {
+             opacity: 0.7;
+        }
+        .po-status-icon {
+            margin-left: 0.5rem;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .po-status-completed {
+            color: var(--icon-completed-color);
+        }
+        .po-status-partial {
+            color: var(--icon-partial-color);
+        }
+
 
         .metric-card {
             background-color: var(--bg-secondary);
@@ -117,7 +143,7 @@
             padding: 0.5rem;
             height: 10rem;
             overflow-y: auto;
-             -webkit-tap-highlight-color: transparent; /* Remove highlight azul no toque mobile */
+             -webkit-tap-highlight-color: transparent;
         }
         #po-select option {
             padding: 0.25rem 0.5rem;
@@ -154,6 +180,37 @@
             animation: pulse-red 2s infinite ease-in-out;
         }
 
+        #completed-po-scroller {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.5rem 0;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            height: 2.5rem;
+            display: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+         #scroller-content {
+            display: inline-block;
+            padding-left: 100%; /* Inicia fora da tela */
+            /* v1.4.2: Ajuste na duração da animação (pode precisar de ajuste fino) */
+            animation: scroll-left 30s linear infinite; /* Aumentar para 30s se o texto for longo */
+            color: var(--icon-completed-color);
+            font-weight: bold;
+            font-size: 0.875rem;
+            line-height: 1.5rem;
+        }
+         @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            /* v1.4.2: Ajustar translateX para o tamanho real do conteúdo se necessário, mas -100% deve funcionar */
+            100% { transform: translateX(-100%); }
+        }
+        #completed-po-scroller:hover #scroller-content {
+            animation-play-state: paused;
+        }
+
     </style>
 </head>
 <body class="grid grid-cols-12 gap-4 p-4 min-h-screen">
@@ -182,9 +239,9 @@
             <div id="data-status" class="text-xs text-gray-400">Verificando...</div>
              <div id="data-last-updated" class="text-xs text-gray-500 mt-1"></div>
              <p class="text-xs text-gray-500 mt-2">Desenvolvido por: Tales_Solidade</p>
-             <!-- v1.3.4: Atualização da versão -->
-             <p class="text-xs text-gray-500 mt-1">Versão: 1.3.4</p>
-             <!-- FIM v1.3.4 -->
+             <!-- v1.4.2: Atualização da versão -->
+             <p class="text-xs text-gray-500 mt-1">Versão: 1.4.2</p>
+             <!-- FIM v1.4.2 -->
         </div>
     </aside>
 
@@ -195,10 +252,12 @@
              <p id="painel-info" class="text-sm text-gray-400"></p>
         </div>
 
-        <!-- Status Box -->
+        <div id="completed-po-scroller">
+            <div id="scroller-content"></div>
+        </div>
+
         <div id="global-status" class="status-box status-loading">Status: Carregando dados...</div>
 
-        <!-- Resumo -->
         <div class="card">
             <h2 class="text-xl font-semibold mb-4">Resumo de Pedidos em Carteira Total</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -217,7 +276,6 @@
             </div>
         </div>
 
-        <!-- Dashboard -->
         <div class="card">
             <h2 class="text-xl font-semibold mb-2">Planejamento da Produção</h2>
             <p class="text-sm text-gray-400 mb-4">Este painel é recalculado com base nas POs selecionadas no filtro da barra lateral.</p>
@@ -242,27 +300,23 @@
             </div>
         </div>
 
-        <!-- Detalhe -->
         <div class="card">
             <h2 class="text-xl font-semibold mb-4">Tabela de Itens em Carteira (Filtrada por PO)</h2>
              <div class="table-container">
                 <table id="detail-table">
                     <thead>
                         <tr>
+                            <th>Concluído?</th>
                             <th>PO</th>
                             <th>Cliente</th>
                             <th>Perfil</th>
                             <th>Produto</th>
                             <th>Em Carteira Pacotes</th>
                             <th>Em Carteira M³</th>
-                            <th>Solicitado Pacotes</th>
-                             <th>Solicitado M³</th>
-                            <th>Enviado Pacotes</th>
-                            <th>Enviado M³ (Estimado)</th>
                         </tr>
                     </thead>
                     <tbody>
-                         <tr><td colspan="10" class="text-center text-gray-500 py-4">Calculando...</td></tr>
+                         <tr><td colspan="7" class="text-center text-gray-500 py-4">Calculando...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -271,7 +325,6 @@
 
     </main>
 
-    <!-- Script de dados será carregado aqui -->
     <script id="script-dados" src=""></script>
 
     <script>
@@ -283,6 +336,8 @@
         let selectedPOs = new Set();
         let lastDataLoadTime = null;
         let globalStatusTimeout = null;
+        let completionStatus = {};
+        const STORAGE_KEY = 'pcpCompletionStatus';
 
         // --- Funções de Formatação ---
         function formatNumber(num, decimals = 0) {
@@ -478,14 +533,43 @@
 
              if (filteredItems.length === 0) {
                  if (selectedPOs.size === 0 && uniquePOs.length > 0) {
-                      tbody.innerHTML = `<tr><td colspan="10" class="text-center text-gray-500 py-4">Nenhuma PO selecionada no filtro.</td></tr>`;
+                      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-gray-500 py-4">Nenhuma PO selecionada no filtro.</td></tr>`;
                  } else {
-                      tbody.innerHTML = `<tr><td colspan="10" class="text-center text-gray-500 py-4">Nenhum item em carteira encontrado para as POs selecionadas.</td></tr>`;
+                      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-gray-500 py-4">Nenhum item em carteira encontrado para as POs selecionadas.</td></tr>`;
                  }
                  emptyMsg.style.display = 'block';
+                 renderCompletedPOScroller([]);
                  return;
              }
              emptyMsg.style.display = 'none';
+
+             const poStatusMap = {};
+             filteredItems.forEach(item => {
+                 const po = item.PO || 'na';
+                 const itemId = `${po}|${item.Cliente || 'na'}|${item.Perfil || 'na'}|${item.Produto || 'na'}`;
+                 if (!poStatusMap[po]) {
+                     poStatusMap[po] = { total: 0, completed: 0 };
+                 }
+                 poStatusMap[po].total++;
+                 if (completionStatus[itemId] === true) {
+                     poStatusMap[po].completed++;
+                 }
+             });
+
+             const poCompletionState = {};
+             const completedPOs = [];
+             for (const po in poStatusMap) {
+                 if (poStatusMap[po].completed === 0) {
+                     poCompletionState[po] = 'pending';
+                 } else if (poStatusMap[po].completed === poStatusMap[po].total) {
+                     poCompletionState[po] = 'full';
+                     completedPOs.push(po);
+                 } else {
+                     poCompletionState[po] = 'partial';
+                 }
+             }
+             completedPOs.sort();
+
 
             filteredItems.sort((a, b) => {
                 const poComp = (a.PO || '').localeCompare(b.PO || '');
@@ -496,29 +580,68 @@
             });
 
             filteredItems.forEach(item => {
+                const itemId = `${item.PO || 'na'}|${item.Cliente || 'na'}|${item.Perfil || 'na'}|${item.Produto || 'na'}`;
+                const isItemCompleted = completionStatus[itemId] === true;
+                const poState = poCompletionState[item.PO || 'na'];
+
                 const pecasPorPacote = getPecasPorPacote(item.Perfil);
                 const emCarteiraPct = Math.round((item.Pendente_Pecas || 0) / pecasPorPacote);
                 const emCarteiraM3 = item.Pendente_M3 || 0;
-                const solicitadoPct = Math.round((item.Solicitado_Pecas || 0) / pecasPorPacote);
-                const enviadoPct = Math.floor((item.Enviado_Pecas || 0) / pecasPorPacote);
+
+                let rowClass = '';
+                let poIndicatorIcon = '';
+                if (poState === 'full') {
+                    rowClass = 'completed-row';
+                    poIndicatorIcon = '<span class="po-status-icon po-status-completed">✓</span>';
+                } else if (poState === 'partial') {
+                    poIndicatorIcon = '<span class="po-status-icon po-status-partial">⚠️</span>';
+                    if (isItemCompleted) {
+                         rowClass = 'completed-row';
+                    }
+                } else {
+                     if (isItemCompleted) {
+                          rowClass = 'completed-row';
+                     }
+                }
+
 
                 const row = `
-                    <tr>
-                        <td>${item.PO || 'N/A'}</td>
+                    <tr class="${rowClass}" data-item-id="${itemId}">
+                        <td class="text-center">
+                            <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
+                                   ${isItemCompleted ? 'checked' : ''} onchange="toggleItemCompletion(this)">
+                        </td>
+                        <td>${item.PO || 'N/A'}${poIndicatorIcon}</td>
                         <td>${item.Cliente || 'N/A'}</td>
                         <td>${item.Perfil || 'N/A'}</td>
                         <td>${item.Produto || 'N/A'}</td>
                         <td>${formatPct(emCarteiraPct)}</td>
                         <td>${formatM3(emCarteiraM3)}</td>
-                        <td>${formatPct(solicitadoPct)}</td>
-                        <td>${formatM3(item.Solicitado_M3)}</td>
-                        <td>${formatPct(enviadoPct)}</td>
-                        <td>${formatM3(item.Enviado_M3_Calc)}</td>
                     </tr>
                 `;
                 tbody.innerHTML += row;
             });
+
+             renderCompletedPOScroller(completedPOs);
         }
+
+         // v1.4.2: Função corrigida para não duplicar
+         function renderCompletedPOScroller(completedPOs) {
+             const scrollerContainer = document.getElementById('completed-po-scroller');
+             const scrollerContent = document.getElementById('scroller-content');
+
+             if (completedPOs.length > 0) {
+                 // Cria o texto uma única vez
+                 const text = "POs Concluídas: " + completedPOs.join(' ✓ | ') + ' ✓';
+                 scrollerContent.textContent = text; // Define o conteúdo
+                 // A animação CSS cuida do resto, não precisa duplicar o texto aqui
+                 scrollerContainer.style.display = 'block';
+             } else {
+                 scrollerContainer.style.display = 'none';
+                 scrollerContent.textContent = '';
+             }
+         }
+         // --- FIM v1.4.2 ---
 
         // --- Funções de Interação ---
 
@@ -563,6 +686,153 @@
              renderDashboard(dashboardData);
              renderDetailTable(filteredItemsEmCarteira);
         }
+
+        // --- Funções para Gerenciar Estado de Conclusão ---
+        function loadCompletionStatus() {
+            try {
+                const storedStatus = localStorage.getItem(STORAGE_KEY);
+                if (storedStatus) {
+                    completionStatus = JSON.parse(storedStatus);
+                    console.log("Status de conclusão carregado:", completionStatus);
+                } else {
+                    completionStatus = {};
+                }
+            } catch (error) {
+                console.error("Erro ao carregar status:", error);
+                completionStatus = {};
+            }
+        }
+
+        function saveCompletionStatus() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(completionStatus));
+                console.log("Status de conclusão salvo:", completionStatus);
+            } catch (error) {
+                console.error("Erro ao salvar status:", error);
+            }
+        }
+
+        function toggleItemCompletion(checkboxElement) {
+            const row = checkboxElement.closest('tr');
+            const itemId = row.getAttribute('data-item-id');
+            const isChecked = checkboxElement.checked;
+            const po = itemId.split('|')[0];
+
+            if (!itemId || po === 'na') {
+                console.error("ID do item ou PO inválido:", itemId);
+                return;
+            }
+
+            completionStatus[itemId] = isChecked;
+            saveCompletionStatus();
+
+            updatePOVisualStatus(po); // Atualiza o visual da PO inteira E o scroller
+
+            console.log(`Item ${itemId} marcado como ${isChecked ? 'concluído' : 'não concluído'}`);
+        }
+
+        // v1.4.1: Função atualizada para usar a lógica corrigida do scroller
+        function updatePOVisualStatus(po) {
+             const tbody = document.getElementById('detail-table').querySelector('tbody');
+             // v1.4.2: Garantir que seleciona APENAS as linhas VISÍVEIS (filtradas)
+             const rowsForPO = tbody.querySelectorAll(`tr[data-item-id^="${po}|"]`);
+             if (rowsForPO.length === 0) {
+                 // Se a PO não está mais visível (foi desfiltrada), remove do scroller se necessário
+                 recalculateAndRenderScroller();
+                 return;
+             }
+
+
+             let totalItems = 0;
+             let completedItems = 0;
+             rowsForPO.forEach(r => {
+                 totalItems++;
+                 const id = r.getAttribute('data-item-id');
+                 if (completionStatus[id] === true) {
+                     completedItems++;
+                 }
+             });
+
+             let poState = 'pending';
+             let poIndicatorIcon = '';
+             if (completedItems === 0) {
+                 poState = 'pending';
+                 poIndicatorIcon = '';
+             } else if (completedItems === totalItems) {
+                 poState = 'full';
+                 poIndicatorIcon = '<span class="po-status-icon po-status-completed">✓</span>';
+             } else {
+                 poState = 'partial';
+                 poIndicatorIcon = '<span class="po-status-icon po-status-partial">⚠️</span>';
+             }
+
+             rowsForPO.forEach(r => {
+                 const poCell = r.cells[1];
+                 const itemId = r.getAttribute('data-item-id');
+                 const isItemCompleted = completionStatus[itemId] === true;
+
+                 r.classList.remove('completed-row');
+                 const existingIcon = poCell.querySelector('.po-status-icon');
+                 if (existingIcon) existingIcon.remove();
+
+                 if (poState === 'full') {
+                     r.classList.add('completed-row');
+                     if (!poCell.querySelector('.po-status-icon')) {
+                         // v1.4.2: Usar innerHTML para adicionar ícone ao lado do texto existente
+                         poCell.innerHTML = (item.PO || 'N/A') + poIndicatorIcon;
+                     }
+                 } else if (poState === 'partial') {
+                     if (!poCell.querySelector('.po-status-icon')) {
+                         poCell.innerHTML = (item.PO || 'N/A') + poIndicatorIcon;
+                     }
+                     if (isItemCompleted) {
+                          r.classList.add('completed-row');
+                     }
+                 } else { // pending
+                     poCell.textContent = item.PO || 'N/A'; // Garante que não haja ícone
+                      if (isItemCompleted) {
+                          r.classList.add('completed-row');
+                      }
+                 }
+             });
+
+             // v1.4.2: Recalcular e renderizar o scroller sempre que um item muda
+             recalculateAndRenderScroller();
+        }
+
+        // v1.4.2: Nova função separada para recalcular e renderizar o scroller
+        function recalculateAndRenderScroller() {
+            const allCompletedPOs = [];
+            const allItemsByPO = ALL_PENDING_ITEMS.reduce((acc, item) => {
+                const currentPO = item.PO || 'na';
+                if (currentPO === 'na') return acc;
+                if (!acc[currentPO]) acc[currentPO] = [];
+                acc[currentPO].push(item);
+                return acc;
+            }, {});
+
+            for (const currentPO in allItemsByPO) {
+                const itemsOfThisPO = allItemsByPO[currentPO];
+                let allItemsCompleted = true;
+                if (itemsOfThisPO.length === 0) {
+                     allItemsCompleted = false;
+                } else {
+                    for (const item of itemsOfThisPO) {
+                        const itemId = `${item.PO || 'na'}|${item.Cliente || 'na'}|${item.Perfil || 'na'}|${item.Produto || 'na'}`;
+                        if (completionStatus[itemId] !== true) {
+                            allItemsCompleted = false;
+                            break;
+                        }
+                    }
+                }
+                if (allItemsCompleted) {
+                    allCompletedPOs.push(currentPO);
+                }
+            }
+            allCompletedPOs.sort();
+            renderCompletedPOScroller(allCompletedPOs);
+        }
+        // --- FIM v1.4.2 ---
 
 
         // --- Carregamento Inicial e Recarregamento ---
@@ -624,7 +894,7 @@
                     renderFilters();
                     const summary = calcularResumoTotal(itemsEmCarteira);
                     renderSummary(summary);
-                    updateDashboardAndDetail();
+                    updateDashboardAndDetail(); // Renderiza tabelas e scroller
 
                 } else {
                     globalStatus.textContent = `ERRO: Arquivo '${CAMINHO_JS}' carregado, mas as variáveis MOCK_ESTOQUE_LIQUIDO ou MOCK_DADOS_PENDENTES_DETALHADOS não foram definidas. O arquivo pode estar vazio ou corrompido.`;
@@ -671,36 +941,32 @@
         document.addEventListener('DOMContentLoaded', () => {
             const poSelect = document.getElementById('po-select');
 
+            loadCompletionStatus();
+
             document.getElementById('reload-button').addEventListener('click', carregarScriptDados);
             document.getElementById('select-all-po').addEventListener('click', selectAllPOs);
             document.getElementById('clear-all-po').addEventListener('click', clearAllPOs);
 
-             // v1.3.4: Listener para clique (mousedown) e toque (touchstart)
              const handleInteraction = (event) => {
-                const selectElement = event.currentTarget; // O <select>
-                const currentScrollTop = selectElement.scrollTop; // Salva scroll ANTES
-                // Impede o comportamento padrão apenas se NÃO for um toque no scrollbar (evita bugs)
+                const selectElement = event.currentTarget;
+                const currentScrollTop = selectElement.scrollTop;
                 if (event.target.tagName === 'OPTION') {
                      event.preventDefault();
                 }
 
                 const option = event.target;
                 if (option.tagName === 'OPTION') {
-                    option.selected = !option.selected; // Inverte
-                    // Dispara 'change' para atualizar selectedPOs e tabelas
+                    option.selected = !option.selected;
                     selectElement.dispatchEvent(new Event('change'));
-                     // Restaura o scroll DEPOIS que o 'change' foi processado
-                    requestAnimationFrame(() => { // Garante que a restauração ocorra após o DOM atualizar
+                    requestAnimationFrame(() => {
                         selectElement.scrollTop = currentScrollTop;
                     });
                 }
              };
 
              poSelect.addEventListener('mousedown', handleInteraction);
-             poSelect.addEventListener('touchstart', handleInteraction, { passive: false }); // passive: false para permitir preventDefault
-             // --- FIM v1.3.4 ---
+             poSelect.addEventListener('touchstart', handleInteraction, { passive: false });
 
-            // Listener 'change' padrão para ler a seleção final
             poSelect.addEventListener('change', handlePOSelectionChange);
 
             carregarScriptDados();
