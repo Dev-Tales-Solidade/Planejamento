@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCP - Painel de Controle (Futurista)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tema Futurista Dark (mantido igual) */
+        :root {
+            --bg-primary: #0D1117;
+            --bg-secondary: #161B22;
+            --border-color: #30363D;
+            --text-primary: #C9D1D9;
+            --text-secondary: #8B949E;
+            --accent-primary: #58A6FF;
+            --accent-secondary: #1F6FEB;
+            --highlight-red: #DA3633;
+            --highlight-green: #238636;
+            --highlight-bg-red: rgba(218, 54, 51, 0.15);
+            --highlight-bg-green: rgba(35, 134, 54, 0.15);
+        }
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        .table-container {
+             overflow-x: auto;
+             max-height: 400px; /* Altura máxima com scroll */
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 1rem;
+        }
+        th, td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            white-space: nowrap;
+        }
+        th {
+            background-color: #21262D;
+            color: var(--text-primary);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        thead th:first-child { border-top-left-radius: 6px; }
+        thead th:last-child { border-top-right-radius: 6px; }
+        tbody tr:last-child td:first-child { border-bottom-left-radius: 6px; }
+        tbody tr:last-child td:last-child { border-bottom-right-radius: 6px; }
+        tbody tr:last-child td { border-bottom: 0; }
+        tbody tr:nth-child(even) { background-color: rgba(22, 27, 34, 0.5); }
+        tbody tr:hover { background-color: #21262D; }
+
+        .metric-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .metric-value {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .btn {
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: none;
+        }
+        .btn:hover { background-color: var(--accent-secondary); }
+        /* v1.2.0: Botões de filtro menores */
+        .btn-filter {
+            background-color: var(--bg-secondary);
+            color: var(--accent-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem; /* Menor */
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            border: 1px solid var(--border-color);
+            margin-right: 0.5rem; /* Espaço entre botões */
+        }
+        .btn-filter:hover {
+            background-color: var(--accent-secondary);
+            color: var(--bg-primary);
+            border-color: var(--accent-secondary);
+        }
+        .filter-tag {
+            background-color: var(--accent-secondary);
+            color: var(--text-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .filter-tag button {
+            background: none;
+            border: none;
+            color: inherit;
+            margin-left: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        .filter-tag:not(.selected) {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+        .filter-tag.selected {
+             background-color: var(--accent-primary);
+             color: var(--bg-primary);
+             border: 1px solid var(--accent-primary);
+        }
+
+        .status-box { padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; }
+        .status-loading { background-color: rgba(251, 191, 36, 0.1); border: 1px solid #D97706; color: #FBBF24; }
+        .status-success { background-color: rgba(16, 185, 129, 0.1); border: 1px solid #059669; color: #34D399; }
+        .status-error { background-color: rgba(239, 68, 68, 0.1); border: 1px solid #DC2626; color: #F87171; }
+
+        .highlight-red { background-color: var(--highlight-bg-red); color: var(--highlight-red); font-weight: bold; }
+        .highlight-green { background-color: var(--highlight-bg-green); color: var(--highlight-green); font-weight: bold; }
+
+    </style>
+</head>
+<body class="grid grid-cols-12 gap-4 p-4 min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="col-span-12 md:col-span-3 card flex flex-col">
+        <!-- v1.2.3: Caminho da logo alterado para relativo (para hospedagem web) -->
+        <img id="logo" src="logo.jpg" alt="Logo" class="mb-6 max-h-16 object-contain self-center" onerror="this.style.display='none'; document.getElementById('logo-error').style.display='block';">
+         <p id="logo-error" class="text-xs text-red-400 text-center mb-4" style="display: none;">Logo 'logo.jpg' não encontrada (Coloque na mesma pasta do HTML).</p>
+         <!-- FIM v1.2.3 -->
+
+        <button id="reload-button" class="btn w-full mb-6">Recarregar Dados</button>
+
+        <h2 class="text-lg font-semibold mb-3 border-b border-gray-700 pb-2">Filtro de POs</h2>
+        <!-- v1.2.0: Botões Select All/None -->
+        <div class="mb-2">
+            <button id="select-all-po" class="btn-filter">Selecionar Todas</button>
+            <button id="clear-all-po" class="btn-filter">Limpar Seleção</button>
+        </div>
+        <!-- FIM v1.2.0 -->
+        <div id="po-filter-container" class="mb-4 flex-grow overflow-y-auto">
+            <p id="po-loading" class="text-sm text-gray-400">Carregando POs pendentes...</p>
+             <div id="po-list" class="flex flex-wrap"></div>
+        </div>
+        <p id="po-empty" class="text-sm text-green-400 hidden">✅ Nenhum pedido pendente encontrado!</p>
+
+
+        <div class="mt-auto border-t border-gray-700 pt-4">
+            <h3 class="text-md font-semibold mb-2">Status (Arquivo de Dados)</h3>
+            <div id="data-status" class="text-xs text-gray-400">Verificando...</div>
+             <div id="data-last-updated" class="text-xs text-gray-500 mt-1"></div>
+             <p class="text-xs text-gray-500 mt-2">Versão: 1.2.3</p> <!-- v1.2.3 -->
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="col-span-12 md:col-span-9">
+        <div class="card mb-4">
+             <h1 class="text-2xl font-bold mb-1">PCP - PLANEJAMENTO E CONTROLE DE PRODUÇÃO</h1>
+             <p id="painel-info" class="text-sm text-gray-400">Este painel lê o arquivo <code>dados_atuais.js</code>. Para acesso via link, o script <code>exportador_automatico.py</code> precisa fazer upload deste arquivo para um servidor web.</p>
+        </div>
+
+        <!-- Status Box -->
+        <div id="global-status" class="status-box status-loading">Status: Carregando dados...</div>
+
+        <!-- Resumo -->
+        <div class="card">
+            <h2 class="text-xl font-semibold mb-4">Resumo da Carteira Pendente Total</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="metric-card">
+                    <span class="metric-label">Total de POs Pendentes</span>
+                    <span id="metric-pos" class="metric-value">0 POs</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Total de Pacotes Pendentes</span>
+                    <span id="metric-pacotes" class="metric-value">0 pcts</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Total de M³ Pendentes</span>
+                    <span id="metric-m3" class="metric-value">0.000 m³</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="card">
+            <h2 class="text-xl font-semibold mb-2">Planejamento da Produção</h2>
+            <p class="text-sm text-gray-400 mb-4">Este painel é recalculado com base nas POs selecionadas no filtro da barra lateral.</p>
+            <div class="table-container">
+                <table id="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Perfil</th>
+                            <th>M³ Carteira</th>
+                            <th>M³ Estoque</th>
+                            <th>Pacotes Carteira (Est.)</th>
+                            <th>Pacotes Estoque (Est.)</th>
+                            <th>M³ A produzir</th>
+                            <th>Pacotes A produzir (Est.)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="8" class="text-center text-gray-500 py-4">Calculando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Detalhe -->
+        <div class="card">
+            <h2 class="text-xl font-semibold mb-4">Tabela de Itens Pendentes (Filtrada por PO)</h2>
+             <div class="table-container">
+                <table id="detail-table">
+                    <thead>
+                        <tr>
+                            <th>PO</th>
+                            <th>Cliente</th>
+                            <th>Perfil</th>
+                            <th>Produto</th>
+                            <th>Pendente Pacotes (Est.)</th>
+                            <th>Pendente M³</th>
+                            <th>Solicitado Pacotes (Est.)</th>
+                             <th>Solicitado M³</th>
+                            <th>Enviado Pacotes (Est.)</th>
+                            <th>Enviado M³ (Estimado)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                         <tr><td colspan="10" class="text-center text-gray-500 py-4">Calculando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+             <p id="detail-empty" class="text-sm text-green-400 mt-4 hidden">✅ Nenhum item pendente para as POs selecionadas!</p>
+        </div>
+
+    </main>
+
+    <!-- Script de dados será carregado aqui -->
+    <script id="script-dados" src=""></script>
+
+    <script>
+        // --- Constantes e Variáveis Globais ---
+        const CAMINHO_JS = "dados_atuais.js"; // Caminho relativo
+        let ALL_PENDING_ITEMS = []; // Dados brutos carregados
+        let ALL_STOCK_ITEMS = [];   // Dados brutos carregados
+        let uniquePOs = [];
+        let selectedPOs = new Set();
+        let lastDataLoadTime = null;
+
+        // --- Funções de Formatação ---
+        function formatNumber(num, decimals = 0) {
+            if (typeof num !== 'number' || isNaN(num)) return '0';
+            return num.toLocaleString('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+        function formatM3(num) {
+            if (typeof num !== 'number' || isNaN(num)) return '0.000 m³';
+            return num.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' m³';
+        }
+         function formatPct(num) {
+            if (typeof num !== 'number' || isNaN(num)) return '0 pcts';
+            return formatNumber(num, 0) + ' pcts';
+        }
+        function formatPO(num) {
+            if (typeof num !== 'number' || isNaN(num)) return '0 POs';
+            return formatNumber(num, 0) + ' POs';
+        }
+
+        // --- Funções de Cálculo (Baseadas no Python) ---
+        function getPecasPorPacote(perfil) {
+            return perfil === 'LS4S' ? 294 : 420;
+        }
+
+        function calcularResumoTotal(pendingItems) {
+            const trulyPendingItems = pendingItems.filter(item => (item.Pendente_Pecas || 0) > 0 || (item.Pendente_M3 || 0) > 0.001);
+
+            const totalPOs = new Set(trulyPendingItems.map(item => item.PO)).size;
+            let totalPecas = 0;
+            let totalM3 = 0;
+            let totalPacotes = 0;
+
+            trulyPendingItems.forEach(item => {
+                const pendentePecas = item.Pendente_Pecas || 0;
+                totalPecas += pendentePecas;
+                totalM3 += item.Pendente_M3 || 0;
+                if (pendentePecas > 0) {
+                    const pecasPorPacote = getPecasPorPacote(item.Perfil);
+                    totalPacotes += Math.round(pendentePecas / pecasPorPacote); // v1.2.2: Usando Math.round aqui também para consistência
+                }
+            });
+
+            return { totalPOs, totalPacotes, totalM3 };
+        }
+
+        function calcularDashboard(filteredPendingItems, stockItems) {
+            const carteiraAgrupada = filteredPendingItems.reduce((acc, item) => {
+                const key = `${item.Produto || 'N/A'}|${item.Perfil || 'N/A'}`;
+                if (!acc[key]) {
+                    acc[key] = { Produto: item.Produto, Perfil: item.Perfil, Solicitado_Pecas: 0, Solicitado_M3: 0 };
+                }
+                acc[key].Solicitado_Pecas += item.Solicitado_Pecas || 0;
+                acc[key].Solicitado_M3 += item.Solicitado_M3 || 0;
+                return acc;
+            }, {});
+
+            const estoqueMap = stockItems.reduce((acc, item) => {
+                 const key = `${item.Produto || 'N/A'}|${item.Perfil || 'N/A'}`;
+                 acc[key] = {
+                     M3_Estoque_Liquido: item.M3_Estoque_Liquido || 0,
+                     Pecas_Estoque_Liquido: item.Pecas_Estoque_Liquido || 0
+                 };
+                 return acc;
+            }, {});
+
+            const dashboardData = [];
+
+            Object.values(carteiraAgrupada).forEach(carteiraItem => {
+                const key = `${carteiraItem.Produto || 'N/A'}|${carteiraItem.Perfil || 'N/A'}`;
+                const estoqueItem = estoqueMap[key] || { M3_Estoque_Liquido: 0, Pecas_Estoque_Liquido: 0 };
+                const pecasPorPacote = getPecasPorPacote(carteiraItem.Perfil);
+                const m3AProduzir = Math.max(0, carteiraItem.Solicitado_M3 - estoqueItem.M3_Estoque_Liquido);
+                const pecasAProduzir = Math.max(0, carteiraItem.Solicitado_Pecas - estoqueItem.Pecas_Estoque_Liquido);
+                
+                // v1.1.9: Math.round (Arredondamento Padrão)
+                const pacotesCarteira = Math.round(carteiraItem.Solicitado_Pecas / pecasPorPacote);
+                const pacotesEstoque = Math.floor(estoqueItem.Pecas_Estoque_Liquido / pecasPorPacote);
+                const pacotesAProduzir = Math.round(pecasAProduzir / pecasPorPacote);
+
+                dashboardData.push({
+                    Produto: carteiraItem.Produto,
+                    Perfil: carteiraItem.Perfil,
+                    M3_Carteira_Volume: carteiraItem.Solicitado_M3,
+                    M3_Estoque_Liquido: estoqueItem.M3_Estoque_Liquido,
+                    Pacotes_Carteira: pacotesCarteira,
+                    Pacotes_Estoque: pacotesEstoque,
+                    M3_A_Produzir: m3AProduzir,
+                    Pacotes_A_Produzir: pacotesAProduzir,
+                });
+            });
+
+             stockItems.forEach(item => {
+                const key = `${item.Produto || 'N/A'}|${item.Perfil || 'N/A'}`;
+                 if (!carteiraAgrupada[key] && item.Pecas_Estoque_Liquido > 0) {
+                    const pecasPorPacote = getPecasPorPacote(item.Perfil);
+                    dashboardData.push({
+                        Produto: item.Produto,
+                        Perfil: item.Perfil,
+                        M3_Carteira_Volume: 0,
+                        M3_Estoque_Liquido: item.M3_Estoque_Liquido,
+                        Pacotes_Carteira: 0,
+                        Pacotes_Estoque: Math.floor(item.Pecas_Estoque_Liquido / pecasPorPacote),
+                        M3_A_Produzir: 0,
+                        Pacotes_A_Produzir: 0,
+                    });
+                 }
+            });
+
+            return dashboardData.filter(item => item.M3_Carteira_Volume > 0.001 || item.M3_Estoque_Liquido > 0.001);
+        }
+
+        // --- Funções de Renderização ---
+        function renderFilters() {
+            const poLoading = document.getElementById('po-loading');
+            const poListDiv = document.getElementById('po-list');
+            const poEmptyMsg = document.getElementById('po-empty');
+            poListDiv.innerHTML = '';
+
+            if (uniquePOs.length === 0) {
+                 poLoading.style.display = 'none';
+                 poEmptyMsg.style.display = 'block';
+                 return;
+            }
+
+            poLoading.style.display = 'none';
+            poEmptyMsg.style.display = 'none';
+
+            uniquePOs.forEach(po => {
+                const tag = document.createElement('div');
+                tag.className = selectedPOs.has(po) ? 'filter-tag selected' : 'filter-tag';
+                tag.textContent = po;
+                const button = document.createElement('button');
+                button.textContent = '×';
+                tag.appendChild(button);
+                tag.onclick = () => togglePOSelection(po);
+                poListDiv.appendChild(tag);
+            });
+        }
+
+        function renderSummary(summary) {
+            document.getElementById('metric-pos').textContent = formatPO(summary.totalPOs);
+            document.getElementById('metric-pacotes').textContent = formatPct(summary.totalPacotes);
+            document.getElementById('metric-m3').textContent = formatM3(summary.totalM3);
+        }
+
+         function renderDashboard(dashboardData) {
+            const tbody = document.getElementById('dashboard-table').querySelector('tbody');
+            tbody.innerHTML = '';
+
+            if (dashboardData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-gray-500 py-4">Nenhum dado para exibir com os filtros selecionados.</td></tr>`;
+                return;
+            }
+
+            dashboardData.sort((a, b) => {
+                const prodComp = (a.Produto || '').localeCompare(b.Produto || '');
+                if (prodComp !== 0) return prodComp;
+                return (a.Perfil || '').localeCompare(b.Perfil || '');
+            });
+
+            dashboardData.forEach(item => {
+                 const aProduzirM3 = item.M3_A_Produzir || 0;
+                 const aProduzirPct = item.Pacotes_A_Produzir || 0;
+                 const classeM3 = aProduzirM3 > 0.001 ? 'highlight-red' : 'highlight-green';
+                 const classePct = aProduzirPct > 0 ? 'highlight-red' : 'highlight-green';
+
+                const row = `
+                    <tr>
+                        <td>${item.Produto || 'N/A'}</td>
+                        <td>${item.Perfil || 'N/A'}</td>
+                        <td>${formatM3(item.M3_Carteira_Volume)}</td>
+                        <td>${formatM3(item.M3_Estoque_Liquido)}</td>
+                        <td>${formatPct(item.Pacotes_Carteira)}</td>
+                        <td>${formatPct(item.Pacotes_Estoque)}</td>
+                        <td class="${classeM3}">${formatM3(item.M3_A_Produzir)}</td>
+                        <td class="${classePct}">${formatPct(item.Pacotes_A_Produzir)}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function renderDetailTable(filteredPendingItems) {
+            const tbody = document.getElementById('detail-table').querySelector('tbody');
+            const emptyMsg = document.getElementById('detail-empty');
+            tbody.innerHTML = '';
+
+             if (filteredPendingItems.length === 0) {
+                 if (selectedPOs.size === 0 && uniquePOs.length > 0) {
+                      tbody.innerHTML = `<tr><td colspan="10" class="text-center text-gray-500 py-4">Nenhuma PO selecionada no filtro.</td></tr>`;
+                 } else {
+                      tbody.innerHTML = `<tr><td colspan="10" class="text-center text-gray-500 py-4">Nenhum item pendente encontrado para as POs selecionadas.</td></tr>`;
+                 }
+                 emptyMsg.style.display = 'block';
+                 return;
+             }
+             emptyMsg.style.display = 'none';
+
+            filteredPendingItems.sort((a, b) => {
+                const poComp = (a.PO || '').localeCompare(b.PO || '');
+                if (poComp !== 0) return poComp;
+                const prodComp = (a.Produto || '').localeCompare(b.Produto || '');
+                 if (prodComp !== 0) return prodComp;
+                return (a.Perfil || '').localeCompare(b.Perfil || '');
+            });
+
+            filteredPendingItems.forEach(item => {
+                const pecasPorPacote = getPecasPorPacote(item.Perfil);
+                const pendentePct = Math.round((item.Pendente_Pecas || 0) / pecasPorPacote);
+                const solicitadoPct = Math.round((item.Solicitado_Pecas || 0) / pecasPorPacote);
+                const enviadoPct = Math.floor((item.Enviado_Pecas || 0) / pecasPorPacote);
+
+                const row = `
+                    <tr>
+                        <td>${item.PO || 'N/A'}</td>
+                        <td>${item.Cliente || 'N/A'}</td>
+                        <td>${item.Perfil || 'N/A'}</td>
+                        <td>${item.Produto || 'N/A'}</td>
+                        <td>${formatPct(pendentePct)}</td>
+                        <td>${formatM3(item.Pendente_M3)}</td>
+                        <td>${formatPct(solicitadoPct)}</td>
+                        <td>${formatM3(item.Solicitado_M3)}</td>
+                        <td>${formatPct(enviadoPct)}</td>
+                        <td>${formatM3(item.Enviado_M3_Calc)}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // --- Funções de Interação ---
+        function togglePOSelection(po) {
+            if (selectedPOs.has(po)) {
+                selectedPOs.delete(po);
+            } else {
+                selectedPOs.add(po);
+            }
+             renderFilters();
+             updateDashboardAndDetail();
+        }
+
+        // v1.2.0: Funções para botões Select All / Clear All
+        function selectAllPOs() {
+            selectedPOs = new Set(uniquePOs);
+            renderFilters();
+            updateDashboardAndDetail();
+        }
+        function clearAllPOs() {
+             selectedPOs.clear();
+             renderFilters();
+             updateDashboardAndDetail();
+        }
+        // FIM v1.2.0
+
+        function updateDashboardAndDetail() {
+             const filteredPendingItems = ALL_PENDING_ITEMS.filter(item => selectedPOs.has(item.PO));
+             const dashboardData = calcularDashboard(filteredPendingItems, ALL_STOCK_ITEMS);
+             renderDashboard(dashboardData);
+             renderDetailTable(filteredPendingItems);
+        }
+
+        // --- Carregamento Inicial e Recarregamento ---
+        function carregarScriptDados() {
+            const globalStatus = document.getElementById('global-status');
+            const dataStatus = document.getElementById('data-status');
+            const lastUpdated = document.getElementById('data-last-updated');
+
+            globalStatus.textContent = `Tentando carregar ${CAMINHO_JS}...`;
+            globalStatus.className = 'status-box status-loading';
+            dataStatus.textContent = 'Carregando...';
+            lastUpdated.textContent = '';
+
+            const scriptAntigo = document.getElementById('script-dados');
+            if (scriptAntigo) scriptAntigo.remove();
+
+            const timestamp = new Date().getTime();
+            const novoSrc = `${CAMINHO_JS}?v=${timestamp}`;
+
+            const scriptNovo = document.createElement('script');
+            scriptNovo.id = 'script-dados';
+            scriptNovo.src = novoSrc;
+
+            scriptNovo.onload = () => {
+                lastDataLoadTime = new Date();
+                dataStatus.textContent = `'${CAMINHO_JS}' carregado.`;
+                lastUpdated.textContent = `Última atualização: ${lastDataLoadTime.toLocaleTimeString('pt-BR')}`;
+                console.log("Script carregado com sucesso.");
+
+                if (typeof MOCK_ESTOQUE_LIQUIDO !== 'undefined' && typeof MOCK_DADOS_PENDENTES_DETALHADOS !== 'undefined') {
+                    ALL_STOCK_ITEMS = MOCK_ESTOQUE_LIQUIDO;
+                    ALL_PENDING_ITEMS = MOCK_DADOS_PENDENTES_DETALHADOS;
+
+                    const trulyPendingItems = ALL_PENDING_ITEMS.filter(item => (item.Pendente_Pecas || 0) > 0 || (item.Pendente_M3 || 0) > 0.001);
+                    uniquePOs = [...new Set(trulyPendingItems.map(item => item.PO))].sort();
+
+                    if (ALL_PENDING_ITEMS.length === 0 && ALL_STOCK_ITEMS.length === 0) {
+                         globalStatus.textContent = `AVISO: Arquivo '${CAMINHO_JS}' carregado, mas parece estar vazio. O script Python está gerando dados?`;
+                         globalStatus.className = 'status-box status-loading';
+                         uniquePOs = [];
+                         selectedPOs.clear();
+                    } else {
+                        globalStatus.textContent = `SUCESSO: Dados carregados (${ALL_PENDING_ITEMS.length} itens pendentes, ${ALL_STOCK_ITEMS.length} itens de estoque). Processando...`;
+                        globalStatus.className = 'status-box status-success';
+                        console.log("Variáveis MOCK encontradas e com dados.");
+
+                        selectedPOs = new Set([...selectedPOs].filter(po => uniquePOs.includes(po)));
+                        if (selectedPOs.size === 0 && uniquePOs.length > 0) {
+                            selectedPOs = new Set(uniquePOs);
+                        }
+                    }
+
+                    renderFilters();
+                    const summary = calcularResumoTotal(trulyPendingItems);
+                    renderSummary(summary);
+                    updateDashboardAndDetail();
+
+                } else {
+                    globalStatus.textContent = `ERRO: Arquivo '${CAMINHO_JS}' carregado, mas as variáveis MOCK_ESTOQUE_LIQUIDO ou MOCK_DADOS_PENDENTES_DETALHADOS não foram definidas. O arquivo pode estar vazio ou corrompido.`;
+                    globalStatus.className = 'status-box status-error';
+                    console.error("Variáveis MOCK não encontradas.");
+                     ALL_PENDING_ITEMS = [];
+                     ALL_STOCK_ITEMS = [];
+                     uniquePOs = [];
+                     selectedPOs.clear();
+                     renderFilters();
+                     renderSummary({ totalPOs: 0, totalPacotes: 0, totalM3: 0 });
+                     renderDashboard([]);
+                     renderDetailTable([]);
+                }
+            };
+
+            scriptNovo.onerror = (event) => {
+                 let errorMessage = `ERRO 404: Arquivo '${CAMINHO_JS}' não foi encontrado.`;
+                 if (event.target.src.startsWith('file://') && window.location.protocol !== 'file:') {
+                     errorMessage = `ERRO DE SEGURANÇA (CORS): O navegador bloqueou o acesso ao arquivo local '${CAMINHO_JS}'. Abra este HTML diretamente do seu sistema de arquivos (duplo clique), não através de um servidor web local.`;
+                 } else {
+                      errorMessage += ` O script 'exportador_automatico.py' está rodando e salvando na pasta correta?`;
+                 }
+
+                globalStatus.textContent = errorMessage;
+                globalStatus.className = 'status-box status-error';
+                dataStatus.textContent = 'Falha ao carregar.';
+                lastUpdated.textContent = `Tentativa: ${new Date().toLocaleTimeString('pt-BR')}`;
+                console.error("Erro ao carregar o script de dados:", event);
+                 ALL_PENDING_ITEMS = [];
+                 ALL_STOCK_ITEMS = [];
+                 uniquePOs = [];
+                 selectedPOs.clear();
+                 renderFilters();
+                 renderSummary({ totalPOs: 0, totalPacotes: 0, totalM3: 0 });
+                 renderDashboard([]);
+                 renderDetailTable([]);
+            };
+
+            document.head.appendChild(scriptNovo);
+        }
+
+        // --- Inicialização ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('reload-button').addEventListener('click', carregarScriptDados);
+            document.getElementById('select-all-po').addEventListener('click', selectAllPOs);
+            document.getElementById('clear-all-po').addEventListener('click', clearAllPOs);
+            carregarScriptDados();
+        });
+
+    </script>
+
+</body>
+</html>
