@@ -149,9 +149,9 @@
             <div id="data-status" class="text-xs text-gray-400">Verificando...</div>
              <div id="data-last-updated" class="text-xs text-gray-500 mt-1"></div>
              <p class="text-xs text-gray-500 mt-2">Desenvolvido por: Tales_Solidade</p>
-             <!-- v1.5.2: Atualização da versão -->
-             <p class="text-xs text-gray-500 mt-1">Versão: 1.5.2</p>
-             <!-- FIM v1.5.2 -->
+             <!-- v1.5.3: Atualização da versão -->
+             <p class="text-xs text-gray-500 mt-1">Versão: 1.5.3</p>
+             <!-- FIM v1.5.3 -->
         </div>
     </aside>
 
@@ -177,7 +177,7 @@
                 </div>
                 <div class="metric-card">
                     <span class="metric-label">Total de Pacotes em Carteira</span>
-                    <span id="metric-pacotes" class="metric-value">0.000 pcts</span>
+                    <span id="metric-pacotes" class="metric-value">0 pcts</span>
                 </div>
                 <div class="metric-card">
                     <span class="metric-label">Total de M³ em Carteira</span>
@@ -263,13 +263,13 @@
             if (typeof num !== 'number' || isNaN(num)) return '0.000 m³';
             return num.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' m³';
         }
-         // v1.5.2: Alterado para 3 casas decimais
+         // v1.5.3: Revertido para 0 casas decimais e arredondamento
          function formatPct(num) {
-            if (typeof num !== 'number' || isNaN(num)) return '0.000 pcts';
-            // Não arredonda mais, apenas formata com 3 casas
-            return formatNumber(num, 3) + ' pcts';
+            if (typeof num !== 'number' || isNaN(num)) return '0 pcts';
+            // Arredonda para o inteiro mais próximo
+            return formatNumber(Math.round(num), 0) + ' pcts';
         }
-        // FIM v1.5.2
+        // FIM v1.5.3
         function formatPO(num) {
             if (typeof num !== 'number' || isNaN(num)) return '0 POs';
             return formatNumber(num, 0) + ' POs';
@@ -286,8 +286,8 @@
                 const pendentePecas = item.Pendente_Pecas || 0;
                 totalM3 += item.Pendente_M3 || 0;
                 if (pendentePecas > 0) {
-                    // v1.5.2: Remover arredondamento do cálculo
-                    totalPacotes += (pendentePecas / getPecasPorPacote(item.Perfil));
+                    // v1.5.3: Arredondamento no cálculo
+                    totalPacotes += Math.round(pendentePecas / getPecasPorPacote(item.Perfil));
                 }
             });
             return { totalPOs, totalPacotes, totalM3 };
@@ -312,10 +312,10 @@
                 const m3Estoque = estoqueItem.M3_Estoque_Liquido; const pecasEstoque = estoqueItem.Pecas_Estoque_Liquido;
                 const m3AProduzir = Math.max(0, m3Carteira - m3Estoque); const pecasAProduzir = Math.max(0, pecasCarteira - pecasEstoque);
                 
-                // v1.5.2: Remover arredondamento dos cálculos
-                const pacotesCarteira = pecasCarteira / pecasPorPacote;
-                const pacotesEstoque = pecasEstoque / pecasPorPacote;
-                const pacotesAProduzir = pecasAProduzir / pecasPorPacote;
+                // v1.5.3: Re-adicionado arredondamento aos cálculos
+                const pacotesCarteira = Math.round(pecasCarteira / pecasPorPacote);
+                const pacotesEstoque = Math.floor(pecasEstoque / pecasPorPacote); // Estoque é sempre arredondado para baixo
+                const pacotesAProduzir = Math.round(pecasAProduzir / pecasPorPacote); // A produzir segue a regra
 
                 dashboardData.push({
                     Produto: carteiraItem.Produto, Perfil: carteiraItem.Perfil,
@@ -329,7 +329,7 @@
                  if (!carteiraAgrupada[key] && (item.Pecas_Estoque_Liquido > 0 || item.M3_Estoque_Liquido > 0.001)) {
                     dashboardData.push({
                         Produto: item.Produto, Perfil: item.Perfil, M3_Carteira_Volume: 0, M3_Estoque_Liquido: item.M3_Estoque_Liquido,
-                        Pacotes_Carteira: 0, Pacotes_Estoque: (item.Pecas_Estoque_Liquido / getPecasPorPacote(item.Perfil)), // v1.5.2
+                        Pacotes_Carteira: 0, Pacotes_Estoque: Math.floor(item.Pecas_Estoque_Liquido / getPecasPorPacote(item.Perfil)), // v1.5.3
                         M3_A_Produzir: 0, Pacotes_A_Produzir: 0,
                     });
                  }
@@ -342,7 +342,7 @@
         function renderPOFilters() { /* ... (mantida) ... */ }
         function renderSummary(summary) {
              document.getElementById('metric-pos').textContent = formatPO(summary.totalPOs);
-             document.getElementById('metric-pacotes').textContent = formatPct(summary.totalPacotes); // v1.5.2: Agora mostrará decimais
+             document.getElementById('metric-pacotes').textContent = formatPct(summary.totalPacotes); // v1.5.3: Agora formatado como inteiro
              document.getElementById('metric-m3').textContent = formatM3(summary.totalM3);
         }
          function renderDashboard(dashboardData) {
@@ -350,7 +350,7 @@
             if (dashboardData.length === 0) { tbody.innerHTML = `<tr><td colspan="8" class="text-center text-gray-500 py-4">Nenhum dado para exibir.</td></tr>`; return; }
             dashboardData.forEach(item => {
                  const am3 = item.M3_A_Produzir || 0; const apct = item.Pacotes_A_Produzir || 0;
-                 const cm3 = am3 > 0.001 ? 'highlight-red' : ''; const cpct = apct > 0.001 ? 'highlight-red' : ''; // v1.5.2: Checa > 0.001
+                 const cm3 = am3 > 0.001 ? 'highlight-red' : ''; const cpct = apct > 0.5 ? 'highlight-red' : ''; // v1.5.3: Checa > 0.5 (arredondado)
                  const pm3 = cm3 ? ' pulse-red' : ''; const ppct = cpct ? ' pulse-red' : '';
                 tbody.innerHTML += `
                     <tr><td>${item.Produto || 'N/A'}</td><td>${item.Perfil || 'N/A'}</td><td>${formatM3(item.M3_Carteira_Volume)}</td><td>${formatM3(item.M3_Estoque_Liquido)}</td>
@@ -369,8 +369,8 @@
             filteredItems.sort((a, b) => { const pc = (a.PO || '').localeCompare(b.PO || ''); return pc !== 0 ? pc : (a.Produto || '').localeCompare(b.Produto || ''); });
             filteredItems.forEach(item => {
                 const itemId = generateItemId(item); const isItemCompleted = completionStatus[itemId] === true; const poState = poCompletionState[item.PO || 'na'];
-                // v1.5.2: Remover arredondamento do cálculo
-                const emCarteiraPct = (item.Pendente_Pecas || 0) / getPecasPorPacote(item.Perfil);
+                // v1.5.3: Arredondamento no cálculo
+                const emCarteiraPct = Math.round((item.Pendente_Pecas || 0) / getPecasPorPacote(item.Perfil));
                 const emCarteiraM3 = item.Pendente_M3 || 0;
                 let rowClass = ''; let poIndicatorIcon = '';
                 if (poState === 'full') { rowClass = 'completed-row'; poIndicatorIcon = '<span class="po-status-icon po-status-completed">✓</span>'; }
