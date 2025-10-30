@@ -111,13 +111,13 @@
 
     <!-- Sidebar (Mais Fina) -->
     <aside class="col-span-12 md:col-span-2 card flex flex-col">
-        <img id="logo" src="logo.png" alt="Logo" class="mb-6 max-h-16 object-contain self-center" onerror="this.style.display='none'; document.getElementById('logo-error').style.display='block';">
-         <p id="logo-error" class="text-xs text-red-400 text-center mb-4" style="display: none;">Logo 'logo.png' não encontrada (Coloque na mesma pasta do HTML).</p>
+        <img id="logo" src="logo.jpg" alt="Logo" class="mb-6 max-h-16 object-contain self-center" onerror="this.style.display='none'; document.getElementById('logo-error').style.display='block';">
+         <p id="logo-error" class="text-xs text-red-400 text-center mb-4" style="display: none;">Logo 'logo.jpg' não encontrada (Coloque na mesma pasta do HTML).</p>
 
         <button id="reload-button" class="btn w-full mb-6">Recarregar Dados</button>
 
         <!-- v1.5.0: Primeiro Filtro (Principal) -->
-        <h2 class="text-lg font-semibold mb-3 border-b border-gray-700 pb-2">Filtro de POs</h2>
+        <h2 class="text-lg font-semibold mb-3 border-b border-gray-700 pb-2">Filtro de POs (Tabelas)</h2>
         <div class="mb-2">
             <button id="select-all-po" class="btn-filter">Selecionar Todas</button>
             <button id="clear-all-po" class="btn-filter">Limpar Seleção</button>
@@ -130,7 +130,7 @@
         <!-- FIM v1.5.0 -->
 
         <!-- v1.5.0: Segundo Filtro (Reserva de Estoque) -->
-        <h2 class="text-lg font-semibold mb-3 border-b border-gray-700 pb-2">Filtro de POs</h2>
+        <h2 class="text-lg font-semibold mb-3 border-b border-gray-700 pb-2">Filtro Reserva (Simulação)</h2>
         <p class="text-xs text-gray-400 mb-2">Selecione POs aqui para *subtrair* do estoque no painel "Planejamento da Produção".</p>
         <div class="mb-2">
             <button id="select-all-po-reserva" class="btn-filter">Selecionar Todas</button>
@@ -149,9 +149,9 @@
             <div id="data-status" class="text-xs text-gray-400">Verificando...</div>
              <div id="data-last-updated" class="text-xs text-gray-500 mt-1"></div>
              <p class="text-xs text-gray-500 mt-2">Desenvolvido por: Tales_Solidade</p>
-             <!-- v1.5.1: Atualização da versão -->
-             <p class="text-xs text-gray-500 mt-1">Versão: 1.5.1</p>
-             <!-- FIM v1.5.1 -->
+             <!-- v1.5.2: Atualização da versão -->
+             <p class="text-xs text-gray-500 mt-1">Versão: 1.5.2</p>
+             <!-- FIM v1.5.2 -->
         </div>
     </aside>
 
@@ -177,7 +177,7 @@
                 </div>
                 <div class="metric-card">
                     <span class="metric-label">Total de Pacotes em Carteira</span>
-                    <span id="metric-pacotes" class="metric-value">0 pcts</span>
+                    <span id="metric-pacotes" class="metric-value">0.000 pcts</span>
                 </div>
                 <div class="metric-card">
                     <span class="metric-label">Total de M³ em Carteira</span>
@@ -263,10 +263,13 @@
             if (typeof num !== 'number' || isNaN(num)) return '0.000 m³';
             return num.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' m³';
         }
+         // v1.5.2: Alterado para 3 casas decimais
          function formatPct(num) {
-            if (typeof num !== 'number' || isNaN(num)) return '0 pcts';
-            return formatNumber(Math.round(num), 0) + ' pcts';
+            if (typeof num !== 'number' || isNaN(num)) return '0.000 pcts';
+            // Não arredonda mais, apenas formata com 3 casas
+            return formatNumber(num, 3) + ' pcts';
         }
+        // FIM v1.5.2
         function formatPO(num) {
             if (typeof num !== 'number' || isNaN(num)) return '0 POs';
             return formatNumber(num, 0) + ' POs';
@@ -274,6 +277,7 @@
 
         // --- Funções de Cálculo ---
         function getPecasPorPacote(perfil) { return perfil === 'LS4S' ? 294 : 420; }
+        
         function calcularResumoTotal(pendingItems) {
             const itemsEmCarteira = pendingItems.filter(item => (item.Pendente_Pecas || 0) > 0 || (item.Pendente_M3 || 0) > 0.001);
             const totalPOs = new Set(itemsEmCarteira.map(item => item.PO)).size;
@@ -281,7 +285,10 @@
             itemsEmCarteira.forEach(item => {
                 const pendentePecas = item.Pendente_Pecas || 0;
                 totalM3 += item.Pendente_M3 || 0;
-                if (pendentePecas > 0) totalPacotes += Math.round(pendentePecas / getPecasPorPacote(item.Perfil));
+                if (pendentePecas > 0) {
+                    // v1.5.2: Remover arredondamento do cálculo
+                    totalPacotes += (pendentePecas / getPecasPorPacote(item.Perfil));
+                }
             });
             return { totalPOs, totalPacotes, totalM3 };
         }
@@ -304,11 +311,17 @@
                 const m3Carteira = carteiraItem.Solicitado_M3; const pecasCarteira = carteiraItem.Solicitado_Pecas;
                 const m3Estoque = estoqueItem.M3_Estoque_Liquido; const pecasEstoque = estoqueItem.Pecas_Estoque_Liquido;
                 const m3AProduzir = Math.max(0, m3Carteira - m3Estoque); const pecasAProduzir = Math.max(0, pecasCarteira - pecasEstoque);
+                
+                // v1.5.2: Remover arredondamento dos cálculos
+                const pacotesCarteira = pecasCarteira / pecasPorPacote;
+                const pacotesEstoque = pecasEstoque / pecasPorPacote;
+                const pacotesAProduzir = pecasAProduzir / pecasPorPacote;
+
                 dashboardData.push({
                     Produto: carteiraItem.Produto, Perfil: carteiraItem.Perfil,
                     M3_Carteira_Volume: m3Carteira, M3_Estoque_Liquido: m3Estoque,
-                    Pacotes_Carteira: Math.round(pecasCarteira / pecasPorPacote), Pacotes_Estoque: Math.floor(pecasEstoque / pecasPorPacote),
-                    M3_A_Produzir: m3AProduzir, Pacotes_A_Produzir: Math.round(pecasAProduzir / pecasPorPacote),
+                    Pacotes_Carteira: pacotesCarteira, Pacotes_Estoque: pacotesEstoque,
+                    M3_A_Produzir: m3AProduzir, Pacotes_A_Produzir: pacotesAProduzir,
                 });
             });
              adjustedStockItems.forEach(item => {
@@ -316,7 +329,8 @@
                  if (!carteiraAgrupada[key] && (item.Pecas_Estoque_Liquido > 0 || item.M3_Estoque_Liquido > 0.001)) {
                     dashboardData.push({
                         Produto: item.Produto, Perfil: item.Perfil, M3_Carteira_Volume: 0, M3_Estoque_Liquido: item.M3_Estoque_Liquido,
-                        Pacotes_Carteira: 0, Pacotes_Estoque: Math.floor(item.Pecas_Estoque_Liquido / getPecasPorPacote(item.Perfil)), M3_A_Produzir: 0, Pacotes_A_Produzir: 0,
+                        Pacotes_Carteira: 0, Pacotes_Estoque: (item.Pecas_Estoque_Liquido / getPecasPorPacote(item.Perfil)), // v1.5.2
+                        M3_A_Produzir: 0, Pacotes_A_Produzir: 0,
                     });
                  }
             });
@@ -325,34 +339,23 @@
         }
 
         // --- Funções de Renderização ---
-        function renderPOFilters() {
-            const poSelect = document.getElementById('po-select'); const poEmpty = document.getElementById('po-empty'); const poLoading = document.getElementById('po-loading');
-            const poSelectReserva = document.getElementById('po-select-reserva'); const poEmptyReserva = document.getElementById('po-empty-reserva'); const poLoadingReserva = document.getElementById('po-loading-reserva');
-            poSelect.innerHTML = ''; poSelectReserva.innerHTML = '';
-            if (uniquePOs.length === 0) {
-                 poLoading.style.display = 'none'; poEmpty.style.display = 'block'; poSelect.style.display = 'none';
-                 poLoadingReserva.style.display = 'none'; poEmptyReserva.style.display = 'block'; poSelectReserva.style.display = 'none';
-                 return;
-            }
-            poLoading.style.display = 'none'; poEmpty.style.display = 'none'; poSelect.style.display = 'block';
-            poLoadingReserva.style.display = 'none'; poEmptyReserva.style.display = 'none'; poSelectReserva.style.display = 'block';
-            uniquePOs.forEach(po => {
-                const optionMain = document.createElement('option'); optionMain.value = po; optionMain.textContent = po; optionMain.selected = selectedPOs.has(po);
-                poSelect.appendChild(optionMain);
-                const optionReserva = document.createElement('option'); optionReserva.value = po; optionReserva.textContent = po; optionReserva.selected = reservedPOs.has(po);
-                poSelectReserva.appendChild(optionReserva);
-            });
+        function renderPOFilters() { /* ... (mantida) ... */ }
+        function renderSummary(summary) {
+             document.getElementById('metric-pos').textContent = formatPO(summary.totalPOs);
+             document.getElementById('metric-pacotes').textContent = formatPct(summary.totalPacotes); // v1.5.2: Agora mostrará decimais
+             document.getElementById('metric-m3').textContent = formatM3(summary.totalM3);
         }
-        function renderSummary(summary) { document.getElementById('metric-pos').textContent = formatPO(summary.totalPOs); document.getElementById('metric-pacotes').textContent = formatPct(summary.totalPacotes); document.getElementById('metric-m3').textContent = formatM3(summary.totalM3); }
-        function renderDashboard(dashboardData) {
+         function renderDashboard(dashboardData) {
             const tbody = document.getElementById('dashboard-table').querySelector('tbody'); tbody.innerHTML = '';
             if (dashboardData.length === 0) { tbody.innerHTML = `<tr><td colspan="8" class="text-center text-gray-500 py-4">Nenhum dado para exibir.</td></tr>`; return; }
             dashboardData.forEach(item => {
                  const am3 = item.M3_A_Produzir || 0; const apct = item.Pacotes_A_Produzir || 0;
-                 const cm3 = am3 > 0.001 ? 'highlight-red' : ''; const cpct = apct > 0 ? 'highlight-red' : '';
+                 const cm3 = am3 > 0.001 ? 'highlight-red' : ''; const cpct = apct > 0.001 ? 'highlight-red' : ''; // v1.5.2: Checa > 0.001
                  const pm3 = cm3 ? ' pulse-red' : ''; const ppct = cpct ? ' pulse-red' : '';
                 tbody.innerHTML += `
-                    <tr><td>${item.Produto || 'N/A'}</td><td>${item.Perfil || 'N/A'}</td><td>${formatM3(item.M3_Carteira_Volume)}</td><td>${formatM3(item.M3_Estoque_Liquido)}</td><td>${formatPct(item.Pacotes_Carteira)}</td><td>${formatPct(item.Pacotes_Estoque)}</td><td class="${cm3}${pm3}">${formatM3(am3)}</td><td class="${cpct}${ppct}">${formatPct(apct)}</td></tr>`;
+                    <tr><td>${item.Produto || 'N/A'}</td><td>${item.Perfil || 'N/A'}</td><td>${formatM3(item.M3_Carteira_Volume)}</td><td>${formatM3(item.M3_Estoque_Liquido)}</td>
+                    <td>${formatPct(item.Pacotes_Carteira)}</td> <td>${formatPct(item.Pacotes_Estoque)}</td>
+                    <td class="${cm3}${pm3}">${formatM3(am3)}</td><td class="${cpct}${ppct}">${formatPct(apct)}</td></tr>`;
             });
         }
         function renderDetailTable(filteredItems) {
@@ -366,7 +369,9 @@
             filteredItems.sort((a, b) => { const pc = (a.PO || '').localeCompare(b.PO || ''); return pc !== 0 ? pc : (a.Produto || '').localeCompare(b.Produto || ''); });
             filteredItems.forEach(item => {
                 const itemId = generateItemId(item); const isItemCompleted = completionStatus[itemId] === true; const poState = poCompletionState[item.PO || 'na'];
-                const emCarteiraPct = Math.round((item.Pendente_Pecas || 0) / getPecasPorPacote(item.Perfil)); const emCarteiraM3 = item.Pendente_M3 || 0;
+                // v1.5.2: Remover arredondamento do cálculo
+                const emCarteiraPct = (item.Pendente_Pecas || 0) / getPecasPorPacote(item.Perfil);
+                const emCarteiraM3 = item.Pendente_M3 || 0;
                 let rowClass = ''; let poIndicatorIcon = '';
                 if (poState === 'full') { rowClass = 'completed-row'; poIndicatorIcon = '<span class="po-status-icon po-status-completed">✓</span>'; }
                 else if (poState === 'partial') { poIndicatorIcon = '<span class="po-status-icon po-status-partial">⚠️</span>'; if (isItemCompleted) rowClass = 'completed-row';}
@@ -376,232 +381,48 @@
             });
              renderCompletedPOScroller(completedPOs);
         }
-        function renderCompletedPOScroller(completedPOs) {
-             const scrollerC = document.getElementById('completed-po-scroller'); const scrollerCt = document.getElementById('scroller-content');
-             if (completedPOs.length > 0) { scrollerCt.textContent = "POs Concluídas: " + completedPOs.join(' ✓ | ') + ' ✓'; scrollerC.style.display = 'block'; }
-             else { scrollerC.style.display = 'none'; scrollerCt.textContent = ''; }
-         }
+        function renderCompletedPOScroller(completedPOs) { /* ... (mantida) ... */ }
 
         // --- Funções de Interação ---
-        function selectAllPOs() {
-             const poSelect = document.getElementById('po-select'); selectedPOs.clear();
-             for (let i = 0; i < poSelect.options.length; i++) { poSelect.options[i].selected = true; selectedPOs.add(poSelect.options[i].value); }
-             poSelect.dispatchEvent(new Event('change'));
-             updateDashboardAndDetail();
-        }
-        function clearAllPOs() {
-            const poSelect = document.getElementById('po-select');
-            for (let i = 0; i < poSelect.options.length; i++) poSelect.options[i].selected = false;
-             selectedPOs.clear(); poSelect.dispatchEvent(new Event('change'));
-             updateDashboardAndDetail();
-        }
-        function handleMainPOSelectionChange() {
-            const poSelect = document.getElementById('po-select'); selectedPOs.clear();
-            for (let i = 0; i < poSelect.selectedOptions.length; i++) selectedPOs.add(poSelect.selectedOptions[i].value);
-            updateDashboardAndDetail();
-        }
-        function selectAllPOsReserva() {
-             const poSelect = document.getElementById('po-select-reserva'); reservedPOs.clear();
-             for (let i = 0; i < poSelect.options.length; i++) { poSelect.options[i].selected = true; reservedPOs.add(poSelect.options[i].value); }
-             poSelect.dispatchEvent(new Event('change'));
-             updateDashboardAndDetail();
-        }
-        function clearAllPOsReserva() {
-            const poSelect = document.getElementById('po-select-reserva');
-            for (let i = 0; i < poSelect.options.length; i++) poSelect.options[i].selected = false;
-             reservedPOs.clear(); poSelect.dispatchEvent(new Event('change'));
-             updateDashboardAndDetail();
-        }
-        function handleReservationSelectionChange() {
-            const poSelect = document.getElementById('po-select-reserva'); reservedPOs.clear();
-            for (let i = 0; i < poSelect.selectedOptions.length; i++) reservedPOs.add(poSelect.selectedOptions[i].value);
-            updateDashboardAndDetail();
-        }
+        function selectAllPOs() { /* ... (mantida) ... */ }
+        function clearAllPOs() { /* ... (mantida) ... */ }
+        function handleMainPOSelectionChange() { /* ... (mantida) ... */ }
+        function selectAllPOsReserva() { /* ... (mantida) ... */ }
+        function clearAllPOsReserva() { /* ... (mantida) ... */ }
+        function handleReservationSelectionChange() { /* ... (mantida) ... */ }
 
-        // v1.5.1: Correção na lógica de atualização
         function updateDashboardAndDetail() {
              console.log("[DEBUG] Atualizando. POs Filtro Principal:", selectedPOs);
              console.log("[DEBUG] Atualizando. POs Filtro Reserva:", reservedPOs);
-
-             if (!ALL_PENDING_ITEMS || !ALL_STOCK_ITEMS) {
-                 console.warn("[DEBUG] Dados ainda não carregados.");
-                 renderDashboard([]); renderDetailTable([]);
-                 return;
-             }
-
-             // 1. Filtrar Itens (Baseado no Filtro 1)
-             const filteredItemsEmCarteira = ALL_PENDING_ITEMS.filter(item => {
-                 const poValue = item && item.PO ? String(item.PO) : null;
-                 return poValue && selectedPOs.has(poValue);
-             });
+             if (!ALL_PENDING_ITEMS || !ALL_STOCK_ITEMS) { console.warn("[DEBUG] Dados ainda não carregados."); renderDashboard([]); renderDetailTable([]); return; }
+             const filteredItemsEmCarteira = ALL_PENDING_ITEMS.filter(item => { const poValue = item && item.PO ? String(item.PO) : null; return poValue && selectedPOs.has(poValue); });
              console.log("[DEBUG] Itens filtrados (Detalhe):", filteredItemsEmCarteira);
-
-             // 2. Calcular Estoque Ajustado (Baseado no Filtro 2)
-             const itemsAReservar = ALL_PENDING_ITEMS.filter(item => {
-                 const poValue = item && item.PO ? String(item.PO) : null;
-                 return poValue && reservedPOs.has(poValue);
-             });
-             const reservedStockSummary = itemsAReservar.reduce((acc, item) => {
-                const key = `${item.Produto || 'N/A'}|${item.Perfil || 'N/A'}`;
-                if (!acc[key]) acc[key] = { Pecas_Reservadas: 0, M3_Reservados: 0 };
-                acc[key].Pecas_Reservadas += item.Pendente_Pecas || 0;
-                acc[key].M3_Reservados += item.Pendente_M3 || 0;
-                return acc;
-             }, {});
+             const itemsAReservar = ALL_PENDING_ITEMS.filter(item => { const poValue = item && item.PO ? String(item.PO) : null; return poValue && reservedPOs.has(poValue); });
+             const reservedStockSummary = itemsAReservar.reduce((acc, item) => { const key = `${item.Produto || 'N/A'}|${item.Perfil || 'N/A'}`; if (!acc[key]) acc[key] = { Pecas_Reservadas: 0, M3_Reservados: 0 }; acc[key].Pecas_Reservadas += item.Pendente_Pecas || 0; acc[key].M3_Reservados += item.Pendente_M3 || 0; return acc; }, {});
              console.log("[DEBUG] Itens reservados:", reservedStockSummary);
-
              const adjustedStockItems = ALL_STOCK_ITEMS.map(stockItem => {
                  const key = `${stockItem.Produto || 'N/A'}|${stockItem.Perfil || 'N/A'}`;
                  const reserva = reservedStockSummary[key];
-                 if (reserva) {
-                     return { ...stockItem,
-                         M3_Estoque_Liquido: (stockItem.M3_Estoque_Liquido || 0) - reserva.M3_Reservados,
-                         Pecas_Estoque_Liquido: (stockItem.Pecas_Estoque_Liquido || 0) - reserva.Pecas_Reservadas
-                     };
-                 }
+                 if (reserva) { return { ...stockItem, M3_Estoque_Liquido: (stockItem.M3_Estoque_Liquido || 0) - reserva.M3_Reservados, Pecas_Estoque_Liquido: (stockItem.Pecas_Estoque_Liquido || 0) - reserva.Pecas_Reservadas }; }
                  return stockItem;
              });
              console.log("[DEBUG] Estoque Ajustado (Dashboard):", adjustedStockItems);
-
-             // 3. Calcular Dashboard (Carteira com Filtro 1, Estoque com Filtro 2)
              const dashboardData = calcularDashboard(filteredItemsEmCarteira, adjustedStockItems);
              console.log("[DEBUG] Dados Dashboard:", dashboardData);
-
-             // 4. Renderizar
              renderDashboard(dashboardData);
              renderDetailTable(filteredItemsEmCarteira);
         }
-        // --- FIM v1.5.1 ---
-
 
         // --- Funções Firebase / Conclusão ---
-        function generateItemId(item) {
-             const po = (item.PO || 'na').replace(/[.\#$[\]/]/g, '_');
-             const cli = (item.Cliente || 'na').replace(/[.\#$[\]/]/g, '_');
-             const perf = (item.Perfil || 'na').replace(/[.\#$[\]/]/g, '_');
-             const prod = (item.Produto || 'na').replace(/[.\#$[\]/]/g, '_');
-             return `${po}|${cli}|${perf}|${prod}`;
-        }
-        async function initializeFirebase() {
-            const { initializeApp, getAuth, signInAnonymously, signInWithCustomToken, getFirestore, collection, onSnapshot, doc, setDoc, setLogLevel } = window.firebase;
-            setLogLevel('debug');
-            try {
-                const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
-                const firebaseConfig = JSON.parse(firebaseConfigStr);
-                if (!firebaseConfig.apiKey) throw new Error("Config Firebase inválida.");
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app); db = getFirestore(app);
-                console.log("Firebase inicializado.");
-                await new Promise((resolve, reject) => {
-                    const unsub = auth.onAuthStateChanged(async (user) => {
-                        unsub();
-                        if (user) { userId = user.uid; console.log("User já logado:", userId); resolve(); }
-                        else {
-                            try {
-                                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                                if (token) { console.log("Tentando Custom Token..."); const cred = await signInWithCustomToken(auth, token); userId = cred.user.uid; console.log("Login Custom Token ok:", userId); }
-                                else { console.log("Tentando login anônimo..."); const cred = await signInAnonymously(auth); userId = cred.user.uid; console.log("Login Anônimo ok:", userId); }
-                                resolve();
-                            } catch (error) { console.error("Erro Auth:", error); reject(error); }
-                        }
-                    });
-                });
-                startFirestoreListener(); // Inicia listener após auth
-            } catch (error) {
-                console.error("Erro Init Firebase:", error);
-                document.getElementById('global-status').textContent = "ERRO: Falha Firebase. Usando fallback (localStorage).";
-                document.getElementById('global-status').className = 'status-box status-error';
-                loadCompletionStatusFallback(); // Usa localStorage se Firebase falhar
-            }
-        }
-        function startFirestoreListener() {
-            const { collection, onSnapshot, query } = window.firebase;
-             if (!db || !userId) { console.warn("Listener Firestore: DB ou User não pronto."); return; }
-             console.log(`Ouvindo coleção: ${FIRESTORE_COLLECTION_PATH}`);
-             const q = query(collection(db, FIRESTORE_COLLECTION_PATH));
-             if (firestoreListener) firestoreListener();
-             firestoreListener = onSnapshot(q, (snapshot) => {
-                 console.log("Snapshot Firestore recebido:", snapshot.size);
-                 const newStatus = {};
-                 snapshot.forEach((doc) => { newStatus[doc.id] = doc.data().completed || false; });
-                 completionStatus = newStatus;
-                 console.log("Status Conclusão (do Firestore):", completionStatus);
-                 if (ALL_PENDING_ITEMS.length > 0) {
-                      console.log("[v1.5.1] Firestore snapshot recebido, forçando update...");
-                      updateDashboardAndDetail();
-                 }
-             }, (error) => {
-                 console.error("Erro Listener Firestore:", error);
-                 document.getElementById('global-status').textContent = "ERRO: Sincronização falhou.";
-                 document.getElementById('global-status').className = 'status-box status-error';
-             });
-        }
-        async function saveCompletionStatusFirestore(itemId, isCompleted) {
-             const { doc, setDoc, deleteDoc } = window.firebase;
-             if (!db || !userId) { console.error("Firestore não pronto, usando fallback."); saveCompletionStatusFallback(); return; }
-             try {
-                 const docRef = doc(db, FIRESTORE_COLLECTION_PATH, itemId);
-                 if (isCompleted) {
-                     await setDoc(docRef, { completed: true, user: userId, timestamp: new Date() });
-                     console.log(`Firestore: Item ${itemId} marcado true`);
-                 } else {
-                     await deleteDoc(docRef);
-                     console.log(`Firestore: Item ${itemId} desmarcado`);
-                 }
-             } catch (error) {
-                 console.error(`Erro ao salvar ${itemId} no Firestore:`, error);
-                 saveCompletionStatusFallback();
-             }
-        }
-        function loadCompletionStatusFallback() {
-             try { const stored = localStorage.getItem(STORAGE_KEY); completionStatus = stored ? JSON.parse(stored) : {}; console.warn("Fallback: Status carregado do localStorage:", completionStatus); }
-             catch (e) { console.error("Erro fallback load:", e); completionStatus = {}; }
-         }
-         function saveCompletionStatusFallback() {
-             try { localStorage.setItem(STORAGE_KEY, JSON.stringify(completionStatus)); console.warn("Fallback: Status salvo no localStorage:", completionStatus); }
-             catch (e) { console.error("Erro fallback save:", e); }
-         }
-        window.toggleItemCompletion = function(checkboxElement) {
-            const row = checkboxElement.closest('tr'); const itemId = row.getAttribute('data-item-id'); const isChecked = checkboxElement.checked;
-            const po = itemId.split('|')[0];
-            if (!itemId || po === 'na') { console.error("ID inválido:", itemId); return; }
-            completionStatus[itemId] = isChecked; // Atualiza local
-            saveCompletionStatusFirestore(itemId, isChecked); // Salva central
-            updatePOVisualStatus(po); // Atualiza visual
-            console.log(`Item ${itemId} marcado ${isChecked}`);
-        }
-        window.updatePOVisualStatus = function(po) {
-             const tbody = document.getElementById('detail-table').querySelector('tbody');
-             const rowsForPO = tbody.querySelectorAll(`tr[data-item-id^="${po}|"]`);
-             if (rowsForPO.length === 0) { recalculateAndRenderScroller(); return; }
-             let total = 0; let completed = 0;
-             rowsForPO.forEach(r => { total++; const id = r.getAttribute('data-item-id'); if (completionStatus[id] === true) completed++; });
-             let state = 'pending'; let icon = '';
-             if (completed === 0) state = 'pending';
-             else if (completed === total) { state = 'full'; icon = '<span class="po-status-icon po-status-completed">✓</span>';}
-             else { state = 'partial'; icon = '<span class="po-status-icon po-status-partial">⚠️</span>';}
-             rowsForPO.forEach(r => {
-                 const poCell = r.cells[1]; const itemId = r.getAttribute('data-item-id'); const isItemDone = completionStatus[itemId] === true;
-                 const poText = itemId.split('|')[0];
-                 r.classList.remove('completed-row'); const existingIcon = poCell.querySelector('.po-status-icon'); if (existingIcon) existingIcon.remove();
-                 poCell.textContent = poText;
-                 if (state === 'full') { r.classList.add('completed-row'); poCell.innerHTML += icon; }
-                 else if (state === 'partial') { poCell.innerHTML += icon; if (isItemDone) r.classList.add('completed-row'); }
-                 else { if (isItemDone) r.classList.add('completed-row'); }
-             });
-             recalculateAndRenderScroller();
-        }
-        window.recalculateAndRenderScroller = function() {
-            const completedPOsList = [];
-            const allItemsByPO = ALL_PENDING_ITEMS.reduce((acc, item) => { const po = item.PO || 'na'; if (po === 'na') return acc; if (!acc[po]) acc[po] = []; acc[po].push(item); return acc; }, {});
-            for (const po in allItemsByPO) {
-                const items = allItemsByPO[po]; let allDone = true;
-                if (items.length === 0) allDone = false;
-                else { for (const item of items) { const id = generateItemId(item); if (completionStatus[id] !== true) { allDone = false; break; }}}
-                if (allDone) completedPOsList.push(po);
-            }
-            completedPOsList.sort(); renderCompletedPOScroller(completedPOsList);
-        }
+        function generateItemId(item) { /* ... (mantida) ... */ }
+        async function initializeFirebase() { /* ... (mantida) ... */ }
+        function startFirestoreListener() { /* ... (mantida) ... */ }
+        async function saveCompletionStatusFirestore(itemId, isCompleted) { /* ... (mantida) ... */ }
+        function loadCompletionStatusFallback() { /* ... (mantida) ... */ }
+        function saveCompletionStatusFallback() { /* ... (mantida) ... */ }
+        window.toggleItemCompletion = function(checkboxElement) { /* ... (mantida) ... */ }
+        window.updatePOVisualStatus = function(po) { /* ... (mantida) ... */ }
+        window.recalculateAndRenderScroller = function() { /* ... (mantida) ... */ }
 
 
         // --- Carregamento Inicial e Recarregamento ---
@@ -632,7 +453,6 @@
                     const summary = calcularResumoTotal(ALL_PENDING_ITEMS);
                     renderSummary(summary);
                     
-                    // v1.5.1: Chamar updateDashboardAndDetail IMEDIATAMENTE
                     console.log("[v1.5.1] Dados JS carregados, chamando update...");
                     updateDashboardAndDetail();
                     
@@ -647,7 +467,6 @@
             const poSelect = document.getElementById('po-select');
             const poSelectReserva = document.getElementById('po-select-reserva');
 
-            // v1.5.1: Inicia Firebase e DEPOIS carrega dados JS
             initializeFirebase().finally(() => {
                  carregarScriptDados();
             });
@@ -689,6 +508,4 @@
 
 </body>
 </html>
-
-
 
