@@ -96,7 +96,7 @@
     <!-- Sidebar (Mais Fina) -->
     <aside class="col-span-12 md:col-span-2 card flex flex-col">
         <img id="logo" src="logo.png" alt="Logo" class="mb-6 max-h-16 object-contain self-center" onerror="this.style.display='none'; document.getElementById('logo-error').style.display='block';">
-         <p id="logo-error" class="text-xs text-red-400 text-center mb-4" style="display: none;">Logo 'logo.png' não encontrada (Coloque na mesma pasta do HTML).</p>
+        <p id="logo-error" class="text-xs text-red-400 text-center mb-4" style="display: none;">Logo 'logo.png' não encontrada (Coloque na mesma pasta do HTML).</p>
 
         <button id="reload-button" class="btn w-full mb-6">Recarregar Dados</button>
 
@@ -133,9 +133,9 @@
             <div id="data-status" class="text-xs text-gray-400">Verificando...</div>
              <div id="data-last-updated" class="text-xs text-gray-500 mt-1"></div>
              <p class="text-xs text-gray-500 mt-2">Desenvolvido por: Tales_Solidade</p>
-             <!-- v1.5.5: Atualização da versão -->
-             <p class="text-xs text-gray-500 mt-1">Versão: 1.5.5</p>
-             <!-- FIM v1.5.5 -->
+             <!-- v1.5.6: Atualização da versão -->
+             <p class="text-xs text-gray-500 mt-1">Versão: 1.5.6</p>
+             <!-- FIM v1.5.6 -->
         </div>
     </aside>
 
@@ -223,10 +223,10 @@
             
             <!-- 
               
-            -->
+             -->
             <div class="w-full" style="height: 800px; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden;">
                 <iframe 
-                    title="Dashboard Power BI"
+                    title="Produção_custo_PCP"
                     width="100%" 
                     height="100%" 
                     src="https://app.powerbi.com/view?r=eyJrIjoiOTUxN2NjZjctNjE1OS00YmZmLWJiOTktOGYyNzkyZjcwOWZlIiwidCI6IjAwZWZhZWMzLTJmZGYtNDAwZS1hYjFjLTBhOGVmYjM5ZDI4MSJ9"
@@ -255,6 +255,10 @@
         let globalStatusTimeout = null;
         let completionStatus = {};
         const STORAGE_KEY = 'pcpCompletionStatus'; // v1.5.4: Usando localStorage
+        
+        // --- v1.5.6: Constante para o link do Power BI ---
+        const POWER_BI_BASE_URL = "https://app.powerbi.com/view?r=eyJrIjoiOTUxN2NjZjctNjE1OS00YmZmLWJiOTktOGYyNzkyZjcwOWZlIiwidCI6IjAwZWZhZWMzLTJmZGYtNDAwZS1hYjFjLTBhOGVmYjM5ZDI4MSJ9";
+
 
         // --- Funções de Formatação ---
         function formatNumber(num, decimals = 0) {
@@ -324,11 +328,11 @@
              adjustedStockItems.forEach(item => {
                 const key = `${item.Produto || 'N/A'}|${item.Perfil || 'N/A'}`;
                  if (!carteiraAgrupada[key] && (item.Pecas_Estoque_Liquido > 0 || item.M3_Estoque_Liquido > 0.001)) {
-                    dashboardData.push({
-                        Produto: item.Produto, Perfil: item.Perfil, M3_Carteira_Volume: 0, M3_Estoque_Liquido: item.M3_Estoque_Liquido,
-                        Pacotes_Carteira: 0, Pacotes_Estoque: Math.floor(item.Pecas_Estoque_Liquido / getPecasPorPacote(item.Perfil)),
-                        M3_A_Produzir: 0, Pacotes_A_Produzir: 0,
-                    });
+                     dashboardData.push({
+                         Produto: item.Produto, Perfil: item.Perfil, M3_Carteira_Volume: 0, M3_Estoque_Liquido: item.M3_Estoque_Liquido,
+                         Pacotes_Carteira: 0, Pacotes_Estoque: Math.floor(item.Pecas_Estoque_Liquido / getPecasPorPacote(item.Perfil)),
+                         M3_A_Produzir: 0, Pacotes_A_Produzir: 0,
+                     });
                  }
             });
              dashboardData.sort((a, b) => { const pc = (a.Produto || '').localeCompare(b.Produto || ''); return pc !== 0 ? pc : (a.Perfil || '').localeCompare(b.Perfil || ''); });
@@ -393,7 +397,7 @@
              const scrollerC = document.getElementById('completed-po-scroller'); const scrollerCt = document.getElementById('scroller-content');
              if (completedPOs.length > 0) { scrollerCt.textContent = "POs Concluídas: " + completedPOs.join(' ✓ | ') + ' ✓'; scrollerC.style.display = 'block'; }
              else { scrollerC.style.display = 'none'; scrollerCt.textContent = ''; }
-         }
+        }
 
         // --- Funções de Interação ---
         function selectAllPOs() {
@@ -465,19 +469,19 @@
         function loadCompletionStatus() {
              try { const stored = localStorage.getItem(STORAGE_KEY); completionStatus = stored ? JSON.parse(stored) : {}; console.log("Status carregado (localStorage):", completionStatus); }
              catch (e) { console.error("Erro load status:", e); completionStatus = {}; }
-         }
+        }
          function saveCompletionStatus() {
              try { localStorage.setItem(STORAGE_KEY, JSON.stringify(completionStatus)); console.log("Status salvo (localStorage):", completionStatus); }
              catch (e) { console.error("Erro save status:", e); }
          }
         window.toggleItemCompletion = function(checkboxElement) {
-            const row = checkboxElement.closest('tr'); const itemId = row.getAttribute('data-item-id'); const isChecked = checkboxElement.checked;
-            const po = itemId.split('|')[0];
-            if (!itemId || po === 'na') { console.error("ID inválido:", itemId); return; }
-            completionStatus[itemId] = isChecked; // Atualiza local
-            saveCompletionStatus(); // Salva no localStorage
-            updatePOVisualStatus(po); // Atualiza visual
-            console.log(`Item ${itemId} marcado ${isChecked}`);
+             const row = checkboxElement.closest('tr'); const itemId = row.getAttribute('data-item-id'); const isChecked = checkboxElement.checked;
+             const po = itemId.split('|')[0];
+             if (!itemId || po === 'na') { console.error("ID inválido:", itemId); return; }
+             completionStatus[itemId] = isChecked; // Atualiza local
+             saveCompletionStatus(); // Salva no localStorage
+             updatePOVisualStatus(po); // Atualiza visual
+             console.log(`Item ${itemId} marcado ${isChecked}`);
         }
         // FIM v1.5.4
         
@@ -503,15 +507,15 @@
              recalculateAndRenderScroller();
         }
         window.recalculateAndRenderScroller = function() {
-            const completedPOsList = [];
-            const allItemsByPO = ALL_PENDING_ITEMS.reduce((acc, item) => { const po = item.PO || 'na'; if (po === 'na') return acc; if (!acc[po]) acc[po] = []; acc[po].push(item); return acc; }, {});
-            for (const po in allItemsByPO) {
-                const items = allItemsByPO[po]; let allDone = true;
-                if (items.length === 0) allDone = false;
-                else { for (const item of items) { const id = generateItemId(item); if (completionStatus[id] !== true) { allDone = false; break; }}}
-                if (allDone) completedPOsList.push(po);
-            }
-            completedPOsList.sort(); renderCompletedPOScroller(completedPOsList);
+             const completedPOsList = [];
+             const allItemsByPO = ALL_PENDING_ITEMS.reduce((acc, item) => { const po = item.PO || 'na'; if (po === 'na') return acc; if (!acc[po]) acc[po] = []; acc[po].push(item); return acc; }, {});
+             for (const po in allItemsByPO) {
+                 const items = allItemsByPO[po]; let allDone = true;
+                 if (items.length === 0) allDone = false;
+                 else { for (const item of items) { const id = generateItemId(item); if (completionStatus[id] !== true) { allDone = false; break; }}}
+                 if (allDone) completedPOsList.push(po);
+             }
+             completedPOsList.sort(); renderCompletedPOScroller(completedPOsList);
         }
 
 
@@ -520,6 +524,21 @@
             const globalStatus = document.getElementById('global-status'); const dataStatus = document.getElementById('data-status'); const lastUpdated = document.getElementById('data-last-updated');
             globalStatus.textContent = `Carregando ${CAMINHO_JS}...`; globalStatus.className = 'status-box status-loading'; globalStatus.style.opacity = '1'; if (globalStatusTimeout) clearTimeout(globalStatusTimeout);
             dataStatus.textContent = 'Carregando...'; lastUpdated.textContent = '';
+            
+            // --- INÍCIO v1.5.6: Forçar Recarregamento do Iframe ---
+            // Esta é a nova parte. Ela força o iframe a recarregar.
+            try {
+                const powerBiIframe = document.querySelector('iframe[title="Dashboard Power BI"]');
+                if (powerBiIframe) {
+                    console.log("Forçando recarregamento do Power BI iframe...");
+                    // Adiciona um parâmetro de data/hora para quebrar o cache do navegador/GitHub
+                    powerBiIframe.src = `${POWER_BI_BASE_URL}&v=${new Date().getTime()}`;
+                }
+            } catch (e) {
+                console.error("Erro ao tentar recarregar o iframe do Power BI:", e);
+            }
+            // --- FIM v1.5.6 ---
+
             const scriptAntigo = document.getElementById('script-dados'); if (scriptAntigo) scriptAntigo.remove();
             const ts = new Date().getTime(); const src = `${CAMINHO_JS}?v=${ts}`;
             const scriptNovo = document.createElement('script'); scriptNovo.id = 'script-dados'; scriptNovo.src = src;
@@ -548,7 +567,21 @@
                     
                 } else { globalStatus.textContent = `ERRO: '${CAMINHO_JS}' ok, mas variáveis MOCK não definidas.`; globalStatus.className = 'status-box status-error'; console.error("MOCKs não encontradas."); /* ... (reset) ... */ }
             };
-            scriptNovo.onerror = (e) => { /* ... (tratamento de erro mantido) ... */ };
+            
+            scriptNovo.onerror = (e) => {
+                 // --- Tratamento de erro (sem alterações) ---
+                globalStatus.textContent = `ERRO: Falha ao carregar '${CAMINHO_JS}'. Verifique o console.`; 
+                globalStatus.className = 'status-box status-error'; 
+                globalStatus.style.opacity = '1';
+                dataStatus.textContent = 'Falha no carregamento.';
+                console.error(`Erro ao carregar script: ${src}`, e);
+                ALL_PENDING_ITEMS = []; ALL_STOCK_ITEMS = []; uniquePOs = []; selectedPOs.clear(); reservedPOs.clear();
+                renderPOFilters(); 
+                renderSummary({ totalPOs: 0, totalPacotes: 0, totalM3: 0 });
+                renderDashboard([]); 
+                renderDetailTable([]);
+            };
+
             document.head.appendChild(scriptNovo);
         }
 
@@ -559,7 +592,7 @@
 
             // v1.5.4: Carrega do localStorage primeiro
             loadCompletionStatus();
-            // v1.5.4: Carrega dados JS
+            // v1.5.4: Carrega dados JS (e agora o iframe também, via v1.5.6)
             carregarScriptDados();
 
             document.getElementById('reload-button').addEventListener('click', carregarScriptDados);
@@ -569,15 +602,15 @@
             document.getElementById('clear-all-po-reserva').addEventListener('click', clearAllPOsReserva);
 
              const handleInteraction = (event) => {
-                const selectElement = event.currentTarget;
-                const currentScrollTop = selectElement.scrollTop;
-                if (event.target.tagName === 'OPTION') event.preventDefault();
-                const option = event.target;
-                if (option.tagName === 'OPTION') {
-                    option.selected = !option.selected;
-                    selectElement.dispatchEvent(new Event('change'));
-                    requestAnimationFrame(() => { selectElement.scrollTop = currentScrollTop; });
-                }
+                 const selectElement = event.currentTarget;
+                 const currentScrollTop = selectElement.scrollTop;
+                 if (event.target.tagName === 'OPTION') event.preventDefault();
+                 const option = event.target;
+                 if (option.tagName === 'OPTION') {
+                     option.selected = !option.selected;
+                     selectElement.dispatchEvent(new Event('change'));
+                     requestAnimationFrame(() => { selectElement.scrollTop = currentScrollTop; });
+                 }
              };
 
              poSelect.addEventListener('mousedown', handleInteraction);
@@ -599,8 +632,4 @@
 
 </body>
 </html>
-
-
-
-
 
