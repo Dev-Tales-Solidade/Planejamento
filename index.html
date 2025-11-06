@@ -17,7 +17,7 @@
             --text-secondary: #8B949E;
             --accent-primary: #58A6FF;
             --accent-secondary: #1F6FEB;
-            --highlight-red: #DA3633;
+            --highlight-white: #C9D1D9;
             --highlight-green: #238636;
             --highlight-bg-red: rgba(218, 54, 51, 0.15);
             --highlight-bg-green: rgba(35, 134, 54, 0.15);
@@ -81,7 +81,7 @@
         .status-loading { background-color: rgba(251, 191, 36, 0.1); border: 1px solid #D97706; color: #FBBF24; }
         .status-success { background-color: rgba(16, 185, 129, 0.1); border: 1px solid #059669; color: #34D399; }
         .status-error { background-color: rgba(239, 68, 68, 0.1); border: 1px solid #DC2626; color: #F87171; }
-        .highlight-red { background-color: var(--highlight-bg-red); color: var(--highlight-red); font-weight: bold; }
+        .highlight-red { background-color: var(--highlight-bg-red); color: var(--highlight-white); font-weight: bold; }
         .highlight-green { background-color: var(--highlight-bg-green); color: var(--highlight-green); font-weight: bold; }
         @keyframes pulse-red { 0%, 100% { background-color: var(--highlight-bg-red); } 50% { background-color: rgba(218, 54, 51, 0.3); } }
         .pulse-red { animation: pulse-red 2s infinite ease-in-out; }
@@ -100,19 +100,21 @@
 
         <button id="reload-button" class="btn w-full mb-6">Recarregar Dados</button>
 
-        <div style="display: inline-block; text-align: center;">
+        <div style="display: inline-block; text-align: center; margin-left: 75px;">
 
-    <a href="https://app.powerbi.com/view?r=eyJrIjoiOTUxN2NjZjctNjE1OS00YmZmLWJiOTktOGYyNzkyZjcwOWZlIiwidCI6IjAwZWZhZWMzLTJmZGYtNDAwZS1hYjFjLTBhOGVmYjM5ZDI4MSJ9" 
+    <a href="https://app.powerbi.com/links/B8TF3aTy_D?ctid=00efaec3-2fdf-400e-ab1c-0a8efb39d281&pbi_source=linkShare"
        target="_blank">
        <figure> 
         <img 
             src=https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/New_Power_BI_Logo.svg/2048px-New_Power_BI_Logo.svg.png
             alt="Logotipo do Power BI - Acessar Dashboard" 
-            style="width: 80px; border: none;"
+            style="width: 70px; border: none;"
         >
        </figure>
     
     </a>
+<br>   
+<br>
 
 </div>
 
@@ -122,14 +124,13 @@
             <button id="select-all-po" class="btn-filter">Selecionar Todas</button>
             <button id="clear-all-po" class="btn-filter">Limpar Seleção</button>
         </div>
-        <div id="po-filter-container" class="mb-4 flex-grow overflow-y-auto" style="height: 10rem;">
+        <div id="po-filter-container" class="mb-1 flex-grow overflow-y-auto" style="height: 0.5rem;">
             <p id="po-loading" class="text-sm text-gray-400">Carregando POs...</p>
              <select id="po-select" multiple class="po-select-list"></select>
         </div>
         <p id="po-empty" class="text-sm text-green-400 hidden">✅ Nenhum pedido pendente!</p>
-        <!-- FIM v1.5.0 -->
+        
 
-        <!-- v1.5.0: Segundo Filtro (Reserva de Estoque) -->
         <h2 class="text-lg font-semibold mb-3 border-b border-gray-700 pb-2">Filtro de POs</h2>
         <p class="text-xs text-gray-400 mb-2">Selecione POs aqui para *subtrair* do estoque no painel "Planejamento da Produção".</p>
         <div class="mb-2">
@@ -616,7 +617,6 @@
 
 </body>
 </html>
-
 
 
 
