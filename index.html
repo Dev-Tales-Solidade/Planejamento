@@ -6,7 +6,7 @@
     <title>PCP - Painel de Controle</title>
     <link rel="icon" href="logo.jpg" type="image/jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- v1.5.4: Firebase SDK Removido -->
+    
     <style>
         /* Tema Dark (mantido) */
         :root {
@@ -47,7 +47,7 @@
         .btn-filter { background-color: var(--bg-secondary); color: var(--accent-primary); padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s, color 0.2s; border: 1px solid var(--border-color); margin-right: 0.5rem; }
         .btn-filter:hover { background-color: var(--accent-secondary); color: var(--bg-primary); border-color: var(--accent-secondary); }
         
-        /* Estilo para ambas as listas suspensas */
+        
         .po-select-list {
             background-color: var(--bg-secondary);
             border: 1px solid var(--border-color);
@@ -93,7 +93,7 @@
 </head>
 <body class="grid grid-cols-12 gap-4 p-4 min-h-screen">
 
-    <!-- Sidebar (Mais Fina) -->
+    
     <aside class="col-span-12 md:col-span-2 card flex flex-col">
         <img id="logo" src="logo.png" alt="Logo" class="mb-6 max-h-16 object-contain self-center" onerror="this.style.display='none'; document.getElementById('logo-error').style.display='block';">
         <p id="logo-error" class="text-xs text-red-400 text-center mb-4" style="display: none;">Logo 'logo.png' não encontrada (Coloque na mesma pasta do HTML).</p>
@@ -122,7 +122,7 @@
 
 </div>
 
-        <!-- v1.5.0: Primeiro Filtro (Principal) -->
+        
         <h2 class="text-lg font-semibold mb-3 border-b border-gray-700 pb-2">Filtro de POs</h2>
         <div class="mb-2">
             <button id="select-all-po" class="btn-filter">Selecionar Todas</button>
@@ -146,7 +146,7 @@
              <select id="po-select-reserva" multiple class="po-select-list"></select>
         </div>
         <p id="po-empty-reserva" class="text-sm text-green-400 hidden">✅ Nenhum pedido pendente!</p>
-        <!-- FIM v1.5.0 -->
+       
 
 
         <div class="mt-auto border-t border-gray-700 pt-4">
@@ -160,7 +160,7 @@
         </div>
     </aside>
 
-    <!-- Main Content (Mais Largo) -->
+    
     <main class="col-span-12 md:col-span-10">
         <div class="card mb-4">
              <h1 class="text-2xl font-bold mb-1">PCP - PLANEJAMENTO E CONTROLE DE PRODUÇÃO</h1>
@@ -236,17 +236,14 @@
             </div>
              <p id="detail-empty" class="text-sm text-green-400 mt-4 hidden">✅ Nenhum item em carteira para as POs selecionadas!</p>
         </div>
-        
-        
-        <!-- v1.5.7: Seção do Power BI Removida -->
 
 
     </main>
 
     <script id="script-dados" src=""></script>
 
-    <script> // v1.5.4: NÃO é mais type="module"
-        // --- Constantes e Variáveis Globais ---
+    <script> 
+        
         const CAMINHO_JS = "dados_atuais.js";
         let ALL_PENDING_ITEMS = [];
         let ALL_STOCK_ITEMS = [];
@@ -258,10 +255,7 @@
         let completionStatus = {};
         const STORAGE_KEY = 'pcpCompletionStatus'; // v1.5.4: Usando localStorage
         
-        // --- v1.5.7: Constante do Power BI Removida ---
-
-
-        // --- Funções de Formatação ---
+       
         function formatNumber(num, decimals = 0) {
             if (typeof num !== 'number' || isNaN(num)) return '0';
             return num.toLocaleString('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
@@ -279,7 +273,6 @@
             return formatNumber(num, 0) + ' POs';
         }
 
-        // --- Funções de Cálculo ---
         function getPecasPorPacote(perfil) { return perfil === 'LS4S' ? 294 : 420; }
         
         function calcularResumoTotal(pendingItems) {
@@ -340,7 +333,7 @@
             return dashboardData.filter(item => item.M3_Carteira_Volume > 0.001 || item.M3_Estoque_Liquido > 0.001);
         }
 
-        // --- Funções de Renderização ---
+        
         function renderPOFilters() {
             const poSelect = document.getElementById('po-select'); const poEmpty = document.getElementById('po-empty'); const poLoading = document.getElementById('po-loading');
             const poSelectReserva = document.getElementById('po-select-reserva'); const poEmptyReserva = document.getElementById('po-empty-reserva'); const poLoadingReserva = document.getElementById('po-loading-reserva');
@@ -484,7 +477,7 @@
              updatePOVisualStatus(po); // Atualiza visual
              console.log(`Item ${itemId} marcado ${isChecked}`);
         }
-        // FIM v1.5.4
+        
         
         window.updatePOVisualStatus = function(po) {
              const tbody = document.getElementById('detail-table').querySelector('tbody');
@@ -520,13 +513,13 @@
         }
 
 
-        // --- Carregamento Inicial e Recarregamento ---
+       
         function carregarScriptDados() {
             const globalStatus = document.getElementById('global-status'); const dataStatus = document.getElementById('data-status'); const lastUpdated = document.getElementById('data-last-updated');
             globalStatus.textContent = `Carregando ${CAMINHO_JS}...`; globalStatus.className = 'status-box status-loading'; globalStatus.style.opacity = '1'; if (globalStatusTimeout) clearTimeout(globalStatusTimeout);
             dataStatus.textContent = 'Carregando...'; lastUpdated.textContent = '';
             
-            // --- v1.5.7: Bloco do Iframe Removido ---
+            
 
             const scriptAntigo = document.getElementById('script-dados'); if (scriptAntigo) scriptAntigo.remove();
             const ts = new Date().getTime(); const src = `${CAMINHO_JS}?v=${ts}`;
@@ -558,7 +551,7 @@
             };
             
             scriptNovo.onerror = (e) => {
-                 // --- Tratamento de erro (sem alterações) ---
+                 
                 globalStatus.textContent = `ERRO: Falha ao carregar '${CAMINHO_JS}'. Verifique o console.`; 
                 globalStatus.className = 'status-box status-error'; 
                 globalStatus.style.opacity = '1';
@@ -574,7 +567,7 @@
             document.head.appendChild(scriptNovo);
         }
 
-        // --- Inicialização ---
+        
         document.addEventListener('DOMContentLoaded', () => {
             const poSelect = document.getElementById('po-select');
             const poSelectReserva = document.getElementById('po-select-reserva');
@@ -611,7 +604,7 @@
              poSelectReserva.addEventListener('change', handleReservationSelectionChange);
         });
 
-        // Disponibilizar funções globais
+       
         window.toggleItemCompletion = toggleItemCompletion;
         window.updatePOVisualStatus = updatePOVisualStatus;
         window.recalculateAndRenderScroller = recalculateAndRenderScroller;
@@ -621,8 +614,3 @@
 
 </body>
 </html>
-
-
-
-
-
