@@ -16,6 +16,7 @@
             --text-primary: #C9D1D9;
             --text-secondary: #8B949E;
             --accent-primary: #983A1E;
+            --accent-primary1: #C9D1D9;
             --accent-secondary: #E1D7C7;
             --highlight-white: #C9D1D9;
             --highlight-green: #238636;
@@ -44,7 +45,7 @@
         .metric-value { font-size: 1.875rem; font-weight: 600; color: var(--text-primary); }
         .btn { background-color: var(--accent-primary); color: var(--bg-primary); padding: 0.5rem 1rem; border-radius: 6px; font-weight: 500; cursor: pointer; transition: background-color 0.2s; border: none; }
         .btn:hover { background-color: var(--accent-secondary); }
-        .btn-filter { background-color: var(--bg-secondary); color: var(--accent-primary); padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s, color 0.2s; border: 1px solid var(--border-color); margin-right: 0.5rem; }
+        .btn-filter { background-color: var(--bg-secondary); color: var(--accent-primary1); padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s, color 0.2s; border: 1px solid var(--border-color); margin-right: 0.5rem; }
         .btn-filter:hover { background-color: var(--accent-secondary); color: var(--bg-primary); border-color: var(--accent-secondary); }
         
         
@@ -95,26 +96,25 @@
 
     
     <aside class="col-span-12 md:col-span-2 card flex flex-col">
-        <img id="logo" src="logo.png" alt="Logo" class="mb-6 max-h-16 object-contain self-center" onerror="this.style.display='none'; document.getElementById('logo-error').style.display='block';">
+        <img id="logo" src="logo.png" alt="Logo" class="mb-5 max-h-17 object-contain self-center" onerror="this.style.display='none'; document.getElementById('logo-error').style.display='block';">
         <p id="logo-error" class="text-xs text-red-400 text-center mb-4" style="display: none;">Logo 'logo.png' não encontrada (Coloque na mesma pasta do HTML).</p>
 
         <button id="reload-button" class="btn w-full mb-6">Recarregar Dados</button>
 
-       
-<div style="display: inline-block; text-align: center; margin-left: 85px;">
+        <a href="https://app.powerbi.com/links/B8TF3aTy_D?ctid=00efaec3-2fdf-400e-ab1c-0a8efb39d281&pbi_source=linkShare" 
+   class="btn-filter flex items-center w-full" 
+   target="_blank">
 
-    <a href="https://app.powerbi.com/links/B8TF3aTy_D?ctid=00efaec3-2fdf-400e-ab1c-0a8efb39d281&pbi_source=linkShare"
-       target="_blank">
-        
-        <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/New_Power_BI_Logo.svg/2048px-New_Power_BI_Logo.svg.png" 
-            alt="Logotipo do Power BI - Acessar Dashboard" 
-            style="width: 70px; border: none;"
-        >
+   <img 
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/New_Power_BI_Logo.svg/2048px-New_Power_BI_Logo.svg.png" 
+        alt="Logotipo do Power BI - Acessar Dashboard" 
+        style="width: 20px; height: 20px; border: none;"
+        class="mr-2"
+   >
     
-    </a>
+   Dashboard De Produção
+</a>
 
-</div>
 <br>   
 <br>
 
@@ -130,11 +130,11 @@
             <p id="po-loading" class="text-sm text-gray-400">Carregando POs...</p>
              <select id="po-select" multiple class="po-select-list"></select>
         </div>
-        <p id="po-empty" class="text-sm text-green-400 hidden">✅ Nenhum pedido pendente!</p>
+        <p id="po-empty" class="text-sm text-green-400 hidden">Nenhum pedido pendente!</p>
         
 
         <h2 class="text-lg font-semibold mb-3 border-b border-gray-700 pb-2">Filtro de POs</h2>
-        <p class="text-xs text-gray-400 mb-2">Selecione POs aqui para *subtrair* do estoque no painel "Planejamento da Produção".</p>
+        <p class="text-xs text-gray-400 mb-2">Selecione aqui POs para *subtrair* do estoque no painel "MPS - Plano Mestre de Produção".</p>
         <div class="mb-2">
             <button id="select-all-po-reserva" class="btn-filter">Selecionar Todas</button>
             <button id="clear-all-po-reserva" class="btn-filter">Limpar Seleção</button>
@@ -143,18 +143,21 @@
             <p id="po-loading-reserva" class="text-sm text-gray-400">Carregando POs...</p>
              <select id="po-select-reserva" multiple class="po-select-list"></select>
         </div>
-        <p id="po-empty-reserva" class="text-sm text-green-400 hidden">✅ Nenhum pedido pendente!</p>
+        <p id="po-empty-reserva" class="text-sm text-green-400 hidden">Nenhum pedido pendente!</p>
        
 
 
         <div class="mt-auto border-t border-gray-700 pt-4">
-            <h3 class="text-md font-semibold mb-2">Base de Dados</h3>
+        
             <div id="data-status" class="text-xs text-gray-400">Verificando...</div>
              <div id="data-last-updated" class="text-xs text-gray-500 mt-1"></div>
-             <p class="text-xs text-gray-500 mt-2">Desenvolvido por: Tales_Solidade</p>
-             
-             <p class="text-xs text-gray-500 mt-1">Versão: 1.5.7</p>
-             
+
+             <p class="text-xs text-gray-500 mt-2">Versão: 1.5.7</p>
+
+             <p class="text-xs text-gray-500 mt-2">© Copyright 2025 Flora_Exportadora</p>
+
+             <p class="text-xs text-gray-500 mt-2">Desenvolvido por Tales_Solidade</p>
+               
         </div>
     </aside>
 
@@ -172,7 +175,7 @@
         <div id="global-status" class="status-box status-loading">Status: Carregando dados...</div>
 
         <div class="card">
-            <h2 class="text-xl font-semibold mb-4">Resumo de Pedidos em Carteira Total</h2>
+            <h2 class="text-xl font-semibold mb-4">Volume de Pedidos em Carteira Total</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="metric-card">
                     <span class="metric-label">Total de POs em Carteira</span>
@@ -190,7 +193,7 @@
         </div>
 
         <div class="card">
-            <h2 class="text-xl font-semibold mb-2">Planejamento da Produção</h2>
+            <h2 class="text-xl font-semibold mb-2">MPS - Plano Mestre de Produção</h2>
             <div class="table-container">
                 <table id="dashboard-table">
                     <thead>
@@ -232,7 +235,7 @@
                     </tbody>
                 </table>
             </div>
-             <p id="detail-empty" class="text-sm text-green-400 mt-4 hidden">✅ Nenhum item em carteira para as POs selecionadas!</p>
+             <p id="detail-empty" class="text-sm text-green-400 mt-4 hidden">Nenhum item em carteira para as POs selecionadas!</p>
         </div>
 
 
@@ -251,7 +254,7 @@
         let lastDataLoadTime = null;
         let globalStatusTimeout = null;
         let completionStatus = {};
-        const STORAGE_KEY = 'pcpCompletionStatus'; // v1.5.4: Usando localStorage
+        const STORAGE_KEY = 'pcpCompletionStatus'; 
         
        
         function formatNumber(num, decimals = 0) {
