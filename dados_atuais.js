@@ -195,6 +195,30 @@ const MOCK_DADOS_PENDENTES_DETALHADOS = [
         "Pendente_Pecas": 7140.0
     },
     {
+        "PO": "1077915-00",
+        "Cliente": "NOVO",
+        "Perfil": "IMPRESSO",
+        "Produto": "PAINEL RIPADO",
+        "Solicitado_Pecas": 5880,
+        "Solicitado_M3": 22.943335,
+        "Enviado_Pecas": 0.0,
+        "Enviado_M3_Calc": 0.0,
+        "Pendente_M3": 22.943335,
+        "Pendente_Pecas": 5880.0
+    },
+    {
+        "PO": "1077915-00",
+        "Cliente": "NOVO",
+        "Perfil": "PRETO",
+        "Produto": "PAINEL RIPADO",
+        "Solicitado_Pecas": 3780,
+        "Solicitado_M3": 14.749287,
+        "Enviado_Pecas": 0.0,
+        "Enviado_M3_Calc": 0.0,
+        "Pendente_M3": 14.749287,
+        "Pendente_Pecas": 3780.0
+    },
+    {
         "PO": "2353036",
         "Cliente": "ECMD",
         "Perfil": "BRANCO",
