@@ -1,7 +1,7 @@
 const MOCK_ESTOQUE_LIQUIDO = [
     {
         "Produto": "MOLDURAS",
-        "Perfil": "BRANCA",
+        "Perfil": "BRANCO",
         "M3_Estoque_Liquido": 1425.285,
         "Pecas_Estoque_Liquido": 0.0
     },
@@ -26,8 +26,8 @@ const MOCK_ESTOQUE_LIQUIDO = [
     {
         "Produto": "PAINEL RIPADO",
         "Perfil": "PRETO",
-        "M3_Estoque_Liquido": 16.3880963032,
-        "Pecas_Estoque_Liquido": 4200.0
+        "M3_Estoque_Liquido": 21.3045252032,
+        "Pecas_Estoque_Liquido": 5460.0
     }
 ];
 
