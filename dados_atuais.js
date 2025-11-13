@@ -20,14 +20,14 @@ const MOCK_ESTOQUE_LIQUIDO = [
     {
         "Produto": "PAINEL RIPADO",
         "Perfil": "IMPRESSO",
-        "M3_Estoque_Liquido": 93.41214900800001,
-        "Pecas_Estoque_Liquido": 23940.0
+        "M3_Estoque_Liquido": 81.94048162880001,
+        "Pecas_Estoque_Liquido": 21000.0
     },
     {
         "Produto": "PAINEL RIPADO",
         "Perfil": "PRETO",
-        "M3_Estoque_Liquido": 21.3045252032,
-        "Pecas_Estoque_Liquido": 5460.0
+        "M3_Estoque_Liquido": 7.040000582492212e-08,
+        "Pecas_Estoque_Liquido": 0.0
     }
 ];
 
@@ -435,10 +435,10 @@ const MOCK_DADOS_PENDENTES_DETALHADOS = [
         "Produto": "PAINEL RIPADO",
         "Solicitado_Pecas": 2940,
         "Solicitado_M3": 11.471667,
-        "Enviado_Pecas": 0.0,
-        "Enviado_M3_Calc": 0.0,
-        "Pendente_M3": 11.471667,
-        "Pendente_Pecas": 2940.0
+        "Enviado_Pecas": 8400.0,
+        "Enviado_M3_Calc": 32.77619142857143,
+        "Pendente_M3": -21.30452442857143,
+        "Pendente_Pecas": -5460.0
     },
     {
         "PO": "2367925",
@@ -447,10 +447,10 @@ const MOCK_DADOS_PENDENTES_DETALHADOS = [
         "Produto": "PAINEL RIPADO",
         "Solicitado_Pecas": 5460,
         "Solicitado_M3": 21.304525,
-        "Enviado_Pecas": 0.0,
-        "Enviado_M3_Calc": 0.0,
-        "Pendente_M3": 21.304525,
-        "Pendente_Pecas": 5460.0
+        "Enviado_Pecas": 8400.0,
+        "Enviado_M3_Calc": 32.77619230769231,
+        "Pendente_M3": -11.47166730769231,
+        "Pendente_Pecas": -2940.0
     },
     {
         "PO": "2367926",
