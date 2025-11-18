@@ -20,14 +20,14 @@ const MOCK_ESTOQUE_LIQUIDO = [
   {
     "Produto": "PAINEL RIPADO",
     "Perfil": "IMPRESSO",
-    "M3_Estoque_Liquido": 81.94048162880001,
-    "Pecas_Estoque_Liquido": 21000.0
+    "M3_Estoque_Liquido": 60.63595649600002,
+    "Pecas_Estoque_Liquido": 15540.0
   },
   {
     "Produto": "PAINEL RIPADO",
     "Perfil": "PRETO",
-    "M3_Estoque_Liquido": 75.38524287039999,
-    "Pecas_Estoque_Liquido": 19320.0
+    "M3_Estoque_Liquido": 24.582144476799982,
+    "Pecas_Estoque_Liquido": 6300.0
   }
 ];
 
@@ -102,10 +102,10 @@ const MOCK_DADOS_PENDENTES_DETALHADOS = [
     "Comprimento": 2.4384,
     "Solicitado_Pecas": 2940,
     "Solicitado_M3": 11.471667,
-    "Enviado_Pecas": 0.0,
-    "Enviado_M3_Calc": 0.0,
-    "Pendente_M3": 11.471667,
-    "Pendente_Pecas": 2940.0
+    "Enviado_Pecas": 2940.0,
+    "Enviado_M3_Calc": 11.471667,
+    "Pendente_M3": 0.0,
+    "Pendente_Pecas": 0.0
   },
   {
     "PO": "1075413-00",
@@ -117,10 +117,10 @@ const MOCK_DADOS_PENDENTES_DETALHADOS = [
     "Comprimento": 2.4384,
     "Solicitado_Pecas": 6300,
     "Solicitado_M3": 24.582144,
-    "Enviado_Pecas": 0.0,
-    "Enviado_M3_Calc": 0.0,
-    "Pendente_M3": 24.582144,
-    "Pendente_Pecas": 6300.0
+    "Enviado_Pecas": 6300.0,
+    "Enviado_M3_Calc": 24.582144,
+    "Pendente_M3": 0.0,
+    "Pendente_Pecas": 0.0
   },
   {
     "PO": "1075763-00",
@@ -192,10 +192,10 @@ const MOCK_DADOS_PENDENTES_DETALHADOS = [
     "Comprimento": 2.4384,
     "Solicitado_Pecas": 2520,
     "Solicitado_M3": 9.832858,
-    "Enviado_Pecas": 0.0,
-    "Enviado_M3_Calc": 0.0,
-    "Pendente_M3": 9.832858,
-    "Pendente_Pecas": 2520.0
+    "Enviado_Pecas": 2520.0,
+    "Enviado_M3_Calc": 9.832858,
+    "Pendente_M3": 0.0,
+    "Pendente_Pecas": 0.0
   },
   {
     "PO": "1075765-00",
@@ -207,10 +207,10 @@ const MOCK_DADOS_PENDENTES_DETALHADOS = [
     "Comprimento": 2.4384,
     "Solicitado_Pecas": 6720,
     "Solicitado_M3": 26.220954,
-    "Enviado_Pecas": 0.0,
-    "Enviado_M3_Calc": 0.0,
-    "Pendente_M3": 26.220954,
-    "Pendente_Pecas": 6720.0
+    "Enviado_Pecas": 6720.0,
+    "Enviado_M3_Calc": 26.220954,
+    "Pendente_M3": 0.0,
+    "Pendente_Pecas": 0.0
   },
   {
     "PO": "1075976-00",
@@ -1116,10 +1116,10 @@ const DADOS_BOM = [
     "Largura": 0.13335,
     "Comprimento": 2.4384,
     "Componente": "PASTA PARA EXTRUSAO - GESSO MARROM 300KG",
-    "Consumo_M3": 15.04182,
-    "Consumo_Peca": 0.0585285,
+    "Consumo_M3": 17.0,
+    "Consumo_Peca": 0.06633,
     "Unidade_Medida": "KG",
-    "Tipo_Insumo": "GESSO BRANCO"
+    "Tipo_Insumo": "GESSO MARROM"
   },
   {
     "Produto": "PAINEL RIPADO",
