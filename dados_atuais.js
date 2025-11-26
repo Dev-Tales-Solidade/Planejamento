@@ -20,14 +20,14 @@ const MOCK_ESTOQUE_LIQUIDO = [
   {
     "Produto": "PAINEL RIPADO",
     "Perfil": "IMPRESSO",
-    "M3_Estoque_Liquido": 60.63595649600002,
-    "Pecas_Estoque_Liquido": 15540.0
+    "M3_Estoque_Liquido": 58.997146870400016,
+    "Pecas_Estoque_Liquido": 15120.0
   },
   {
     "Produto": "PAINEL RIPADO",
     "Perfil": "PRETO",
-    "M3_Estoque_Liquido": 68.83000464159997,
-    "Pecas_Estoque_Liquido": 17640.0
+    "M3_Estoque_Liquido": 37.69262175519998,
+    "Pecas_Estoque_Liquido": 9660.0
   }
 ];
 
@@ -42,10 +42,10 @@ const MOCK_DADOS_PENDENTES_DETALHADOS = [
     "Comprimento": 2.4384,
     "Solicitado_Pecas": 420,
     "Solicitado_M3": 1.63881,
-    "Enviado_Pecas": 0.0,
-    "Enviado_M3_Calc": 0.0,
-    "Pendente_M3": 1.63881,
-    "Pendente_Pecas": 420.0
+    "Enviado_Pecas": 420.0,
+    "Enviado_M3_Calc": 1.63881,
+    "Pendente_M3": 0.0,
+    "Pendente_Pecas": 0.0
   },
   {
     "PO": "1075411-00",
@@ -57,10 +57,10 @@ const MOCK_DADOS_PENDENTES_DETALHADOS = [
     "Comprimento": 2.4384,
     "Solicitado_Pecas": 7980,
     "Solicitado_M3": 31.137383,
-    "Enviado_Pecas": 0.0,
-    "Enviado_M3_Calc": 0.0,
-    "Pendente_M3": 31.137383,
-    "Pendente_Pecas": 7980.0
+    "Enviado_Pecas": 7980.0,
+    "Enviado_M3_Calc": 31.137383,
+    "Pendente_M3": 0.0,
+    "Pendente_Pecas": 0.0
   },
   {
     "PO": "1075412-00",
@@ -690,7 +690,7 @@ const DADOS_BOM = [
     "Consumo_M3": 7.13873,
     "Consumo_Peca": 0.02777717,
     "Unidade_Medida": "UN",
-    "Tipo_Insumo": "CHAPA"
+    "Tipo_Insumo": "MDF"
   },
   {
     "Produto": "PAINEL RIPADO",
@@ -726,7 +726,7 @@ const DADOS_BOM = [
     "Consumo_M3": 0.32001,
     "Consumo_Peca": 0.00124517,
     "Unidade_Medida": "L",
-    "Tipo_Insumo": "TINTA"
+    "Tipo_Insumo": "TINTAS IMPRESSORA"
   },
   {
     "Produto": "PAINEL RIPADO",
@@ -942,7 +942,7 @@ const DADOS_BOM = [
     "Consumo_M3": 7.13873,
     "Consumo_Peca": 0.02777717,
     "Unidade_Medida": "UN",
-    "Tipo_Insumo": "CHAPA"
+    "Tipo_Insumo": "MDF"
   },
   {
     "Produto": "PAINEL RIPADO",
@@ -1182,7 +1182,7 @@ const DADOS_BOM = [
     "Consumo_M3": 7.13873,
     "Consumo_Peca": 0.027777167,
     "Unidade_Medida": "UN",
-    "Tipo_Insumo": "CHAPA"
+    "Tipo_Insumo": "MDF"
   },
   {
     "Produto": "PAINEL RIPADO",
@@ -1206,7 +1206,7 @@ const DADOS_BOM = [
     "Consumo_M3": 0.23523,
     "Consumo_Peca": 0.00091528,
     "Unidade_Medida": "L",
-    "Tipo_Insumo": "TINTA"
+    "Tipo_Insumo": "TINTAS IMPRESSORA"
   },
   {
     "Produto": "PAINEL RIPADO",
@@ -1446,7 +1446,7 @@ const DADOS_BOM = [
     "Consumo_M3": 4.79624,
     "Consumo_Peca": 0.0075769909,
     "Unidade_Medida": "UN",
-    "Tipo_Insumo": "CHAPA"
+    "Tipo_Insumo": "MDF"
   },
   {
     "Produto": "MOLDURAS",
@@ -1482,7 +1482,7 @@ const DADOS_BOM = [
     "Consumo_M3": 0.30478,
     "Consumo_Peca": 0.0004814784,
     "Unidade_Medida": "L",
-    "Tipo_Insumo": "TINTA"
+    "Tipo_Insumo": "TINTAS IMPRESSORA"
   },
   {
     "Produto": "MOLDURAS",
@@ -1494,7 +1494,7 @@ const DADOS_BOM = [
     "Consumo_M3": 1.71925,
     "Consumo_Peca": 0.002716039,
     "Unidade_Medida": "L",
-    "Tipo_Insumo": "TINTA UV"
+    "Tipo_Insumo": "TINTAS IMPRESSORA"
   },
   {
     "Produto": "MOLDURAS",
@@ -1710,7 +1710,7 @@ const DADOS_BOM = [
     "Consumo_M3": 4.80505,
     "Consumo_Peca": 0.02777483,
     "Unidade_Medida": "UN",
-    "Tipo_Insumo": "CHAPA"
+    "Tipo_Insumo": "MDF"
   },
   {
     "Produto": "MOLDURAS",
@@ -1746,7 +1746,7 @@ const DADOS_BOM = [
     "Consumo_M3": 0.08327,
     "Consumo_Peca": 0.00048135,
     "Unidade_Medida": "L",
-    "Tipo_Insumo": "TINTA"
+    "Tipo_Insumo": "TINTAS IMPRESSORA"
   },
   {
     "Produto": "MOLDURAS",
@@ -1758,7 +1758,7 @@ const DADOS_BOM = [
     "Consumo_M3": 2.03424,
     "Consumo_Peca": 0.0117586,
     "Unidade_Medida": "L",
-    "Tipo_Insumo": "TINTA UV"
+    "Tipo_Insumo": "TINTAS IMPRESSORA"
   },
   {
     "Produto": "MOLDURAS",
@@ -1974,7 +1974,7 @@ const DADOS_BOM = [
     "Consumo_M3": 4.53333,
     "Consumo_Peca": 0.016666658,
     "Unidade_Medida": "UN",
-    "Tipo_Insumo": "CHAPA"
+    "Tipo_Insumo": "MDF"
   },
   {
     "Produto": "MOLDURAS",
@@ -2010,7 +2010,7 @@ const DADOS_BOM = [
     "Consumo_M3": 0.13094,
     "Consumo_Peca": 0.0004814,
     "Unidade_Medida": "L",
-    "Tipo_Insumo": "TINTA"
+    "Tipo_Insumo": "TINTAS IMPRESSORA"
   },
   {
     "Produto": "MOLDURAS",
@@ -2022,7 +2022,7 @@ const DADOS_BOM = [
     "Consumo_M3": 1.72378,
     "Consumo_Peca": 0.00633742,
     "Unidade_Medida": "L",
-    "Tipo_Insumo": "TINTA UV"
+    "Tipo_Insumo": "TINTAS IMPRESSORA"
   },
   {
     "Produto": "MOLDURAS",
@@ -2238,7 +2238,7 @@ const DADOS_BOM = [
     "Consumo_M3": 6.44444,
     "Consumo_Peca": 0.05555555,
     "Unidade_Medida": "UN",
-    "Tipo_Insumo": "CHAPA"
+    "Tipo_Insumo": "MDF"
   },
   {
     "Produto": "MOLDURAS",
@@ -2274,7 +2274,7 @@ const DADOS_BOM = [
     "Consumo_M3": 0.05584,
     "Consumo_Peca": 0.0004814,
     "Unidade_Medida": "L",
-    "Tipo_Insumo": "TINTA"
+    "Tipo_Insumo": "TINTAS IMPRESSORA"
   },
   {
     "Produto": "MOLDURAS",
@@ -2286,7 +2286,7 @@ const DADOS_BOM = [
     "Consumo_M3": 1.73283,
     "Consumo_Peca": 0.01493822,
     "Unidade_Medida": "L",
-    "Tipo_Insumo": "TINTA UV"
+    "Tipo_Insumo": "TINTAS IMPRESSORA"
   },
   {
     "Produto": "MOLDURAS",
@@ -2502,7 +2502,7 @@ const DADOS_BOM = [
     "Consumo_M3": 14.25,
     "Consumo_Peca": 0.027777773,
     "Unidade_Medida": "UN",
-    "Tipo_Insumo": "CHAPA"
+    "Tipo_Insumo": "MDF"
   },
   {
     "Produto": "PAINEL RIPADO",
@@ -2538,7 +2538,7 @@ const DADOS_BOM = [
     "Consumo_M3": 0.63879,
     "Consumo_Peca": 0.0012452,
     "Unidade_Medida": "L",
-    "Tipo_Insumo": "TINTA"
+    "Tipo_Insumo": "TINTAS IMPRESSORA"
   },
   {
     "Produto": "PAINEL RIPADO",
@@ -2754,7 +2754,7 @@ const DADOS_BOM = [
     "Consumo_M3": 14.25,
     "Consumo_Peca": 0.027777773,
     "Unidade_Medida": "UN",
-    "Tipo_Insumo": "CHAPA"
+    "Tipo_Insumo": "MDF"
   },
   {
     "Produto": "PAINEL RIPADO",
