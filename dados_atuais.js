@@ -2,7 +2,7 @@ const MOCK_ESTOQUE_LIQUIDO = [
   {
     "Produto": "MOLDURAS",
     "Perfil": "BRANCO",
-    "M3_Estoque_Liquido": 1425.285,
+    "M3_Estoque_Liquido": 1390.154,
     "Pecas_Estoque_Liquido": 0.0
   },
   {
@@ -14,14 +14,14 @@ const MOCK_ESTOQUE_LIQUIDO = [
   {
     "Produto": "PAINEL RIPADO",
     "Perfil": "BRANCO",
-    "M3_Estoque_Liquido": 181.08846322239998,
-    "Pecas_Estoque_Liquido": 47460.0
+    "M3_Estoque_Liquido": 146.52908689824,
+    "Pecas_Estoque_Liquido": 38603.0
   },
   {
     "Produto": "PAINEL RIPADO",
     "Perfil": "IMPRESSO",
-    "M3_Estoque_Liquido": 19.66571585600002,
-    "Pecas_Estoque_Liquido": 5040.0
+    "M3_Estoque_Liquido": 65.55238624879996,
+    "Pecas_Estoque_Liquido": 16800.0
   },
   {
     "Produto": "PAINEL RIPADO",
