@@ -26,7 +26,7 @@ const MOCK_ESTOQUE_LIQUIDO = [
   {
     "Produto": "PAINEL RIPADO",
     "Perfil": "PRETO",
-    "M3_Estoque_Liquido": 28.79659540687993,
+    "M3_Estoque_Liquido": 29.498573703199952,
     "Pecas_Estoque_Liquido": 7560.0
   }
 ];
@@ -177,10 +177,10 @@ const MOCK_DADOS_PENDENTES_DETALHADOS = [
     "Comprimento": 2.4384,
     "Solicitado_Pecas": 5040,
     "Solicitado_M3": 19.665716,
-    "Enviado_Pecas": 0.0,
-    "Enviado_M3_Calc": 0.0,
-    "Pendente_M3": 19.665716,
-    "Pendente_Pecas": 5040.0
+    "Enviado_Pecas": 5040.0,
+    "Enviado_M3_Calc": 19.665716,
+    "Pendente_M3": 0.0,
+    "Pendente_Pecas": 0.0
   },
   {
     "PO": "1075765-00",
