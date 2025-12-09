@@ -14,14 +14,14 @@ const MOCK_ESTOQUE_LIQUIDO = [
   {
     "Produto": "PAINEL RIPADO",
     "Perfil": "BRANCO",
-    "M3_Estoque_Liquido": 146.52908689824,
-    "Pecas_Estoque_Liquido": 38603.0
+    "M3_Estoque_Liquido": 128.50217689824,
+    "Pecas_Estoque_Liquido": 33983.0
   },
   {
     "Produto": "PAINEL RIPADO",
     "Perfil": "IMPRESSO",
-    "M3_Estoque_Liquido": 4.916430101599957,
-    "Pecas_Estoque_Liquido": 1260.0
+    "M3_Estoque_Liquido": 27.859765001599982,
+    "Pecas_Estoque_Liquido": 7140.0
   },
   {
     "Produto": "PAINEL RIPADO",
@@ -699,7 +699,7 @@ const DADOS_BOM = [
     "Largura": 0.13335,
     "Comprimento": 2.4384,
     "Componente": "PASTA PARA EXTRUSAO - GESSO PRETO",
-    "Consumo_M3": 28.07807,
+    "Consumo_M3": 28.0,
     "Consumo_Peca": 0.1092532,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "GESSO PRETO"
@@ -711,7 +711,7 @@ const DADOS_BOM = [
     "Largura": 0.13335,
     "Comprimento": 2.4384,
     "Componente": "PRIMER PRETO FOSCO",
-    "Consumo_M3": 6.01673,
+    "Consumo_M3": 6.0,
     "Consumo_Peca": 0.0234114,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "PRIMER PRETO"
@@ -951,7 +951,7 @@ const DADOS_BOM = [
     "Largura": 0.13335,
     "Comprimento": 2.4384,
     "Componente": "PASTA PARA EXTRUSAO - GESSO 300 KG - BRANCO",
-    "Consumo_M3": 24.06692,
+    "Consumo_M3": 24.0,
     "Consumo_Peca": 0.0936456,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "GESSO BRANCO"
@@ -963,7 +963,7 @@ const DADOS_BOM = [
     "Largura": 0.13335,
     "Comprimento": 2.4384,
     "Componente": "PRIMER BRANCO FOSCO",
-    "Consumo_M3": 8.02231,
+    "Consumo_M3": 8.0,
     "Consumo_Peca": 0.0312152,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "PRIMER BRANCO"
@@ -1227,7 +1227,7 @@ const DADOS_BOM = [
     "Largura": 0.13335,
     "Comprimento": 2.4384,
     "Componente": "PRIMER CREME",
-    "Consumo_M3": 9.02509,
+    "Consumo_M3": 9.0,
     "Consumo_Peca": 0.0351171,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "PRIMER CREME"
@@ -1455,7 +1455,7 @@ const DADOS_BOM = [
     "Largura": 0.0381,
     "Comprimento": 2.4384,
     "Componente": "PASTA PARA EXTRUSAO - GESSO PRETO",
-    "Consumo_M3": 27.99239,
+    "Consumo_M3": 28.0,
     "Consumo_Peca": 0.0442217909,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "GESSO PRETO"
@@ -1467,7 +1467,7 @@ const DADOS_BOM = [
     "Largura": 0.0381,
     "Comprimento": 2.4384,
     "Componente": "PRIMER PRETO FOSCO",
-    "Consumo_M3": 5.99837,
+    "Consumo_M3": 6.0,
     "Consumo_Peca": 0.0094760981,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "PRIMER PRETO"
@@ -1719,7 +1719,7 @@ const DADOS_BOM = [
     "Largura": 0.1397,
     "Comprimento": 2.4384,
     "Componente": "PASTA PARA EXTRUSAO - GESSO PRETO",
-    "Consumo_M3": 28.04382,
+    "Consumo_M3": 28.0,
     "Consumo_Peca": 0.16210299,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "GESSO PRETO"
@@ -1731,7 +1731,7 @@ const DADOS_BOM = [
     "Largura": 0.1397,
     "Comprimento": 2.4384,
     "Componente": "PRIMER PRETO FOSCO",
-    "Consumo_M3": 6.00939,
+    "Consumo_M3": 6.0,
     "Consumo_Peca": 0.03473635,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "PRIMER PRETO"
@@ -1983,7 +1983,7 @@ const DADOS_BOM = [
     "Largura": 0.0889,
     "Comprimento": 2.4384,
     "Componente": "PASTA PARA EXTRUSAO - GESSO PRETO",
-    "Consumo_M3": 28.06151,
+    "Consumo_M3": 28.0,
     "Consumo_Peca": 0.103167332,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "GESSO PRETO"
@@ -1995,7 +1995,7 @@ const DADOS_BOM = [
     "Largura": 0.0889,
     "Comprimento": 2.4384,
     "Componente": "PRIMER PRETO FOSCO",
-    "Consumo_M3": 6.01318,
+    "Consumo_M3": 6.0,
     "Consumo_Peca": 0.022107285,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "PRIMER PRETO"
@@ -2247,7 +2247,7 @@ const DADOS_BOM = [
     "Largura": 0.1397,
     "Comprimento": 3.657,
     "Componente": "PASTA PARA EXTRUSAO - GESSO PRETO",
-    "Consumo_M3": 28.20891,
+    "Consumo_M3": 28.0,
     "Consumo_Peca": 0.24318026,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "GESSO PRETO"
@@ -2259,7 +2259,7 @@ const DADOS_BOM = [
     "Largura": 0.1397,
     "Comprimento": 3.657,
     "Componente": "PRIMER PRETO FOSCO",
-    "Consumo_M3": 6.04477,
+    "Consumo_M3": 6.0,
     "Consumo_Peca": 0.05211006,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "PRIMER PRETO"
@@ -2511,7 +2511,7 @@ const DADOS_BOM = [
     "Largura": 0.13335,
     "Comprimento": 1.2192,
     "Componente": "PASTA PARA EXTRUSAO - GESSO PRETO",
-    "Consumo_M3": 28.02364,
+    "Consumo_M3": 28.0,
     "Consumo_Peca": 0.054626979,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "GESSO PRETO"
@@ -2523,7 +2523,7 @@ const DADOS_BOM = [
     "Largura": 0.13335,
     "Comprimento": 1.2192,
     "Componente": "PRIMER PRETO FOSCO",
-    "Consumo_M3": 6.00507,
+    "Consumo_M3": 6.0,
     "Consumo_Peca": 0.011705781,
     "Unidade_Medida": "KG",
     "Tipo_Insumo": "PRIMER PRETO"
